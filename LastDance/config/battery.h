@@ -1,0 +1,1 @@
+#define pinBattery A4
