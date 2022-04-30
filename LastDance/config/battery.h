@@ -1,1 +1,1 @@
-#define pinBattery A4
+#define batteryPin A4
