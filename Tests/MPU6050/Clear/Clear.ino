@@ -1,5 +1,5 @@
 // Inclui a biblioteca criada para gerenciar as leituras do MPU6050
-#include "Gyro.h"
+#include "gyro.h"
 
 void setup()
 {
