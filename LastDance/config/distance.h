@@ -4,4 +4,5 @@
 #define ultraLeftTrigger 31
 #define ultraLeftEcho 10
 
-#define sharpFrontPin A3
+#define ultraFrontTrigger 999
+#define ultraFrontEcho 999
