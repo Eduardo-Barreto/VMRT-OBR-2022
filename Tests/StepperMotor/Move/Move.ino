@@ -18,16 +18,18 @@ stepperMotor motorLeft(
     400   // Maximum velocity
 );
 
-robotBase robotBase(&motorRight, &motorLeft, 62);
+robotBase robotBase(&motorRight, &motorLeft, 61);
 
-void setup() {
+void setup()
+{
     mpuSetup();
+    Serial.begin(9600);
 }
 
 void loop()
 {
-    robotBase.moveCentimeters(70, 70, 20);
+    robotBase.moveCentimeters(100, 100, 10);
     delay(3000);
-    robotBase.moveCentimeters(-70, -70, 20);
+    robotBase.moveCentimeters(-100, -100, 10);
     delay(3000);
 }

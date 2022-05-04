@@ -11,13 +11,14 @@ private:
     byte stepPin;
     byte directionPin;
     byte enablePin;
-    int resolution;
     int minimumVelocity;
     int maximumVelocity;
     unsigned long lastStep = 0;
+    bool _pulse = 0;
 
 public:
     long motorSteps = 0;
+    int resolution;
     stepperMotor(byte stepPin, byte directionPin, byte enablePin, int resolution, int minimumVelocity, int maximumVelocity)
     {
         this->stepPin = stepPin;
@@ -45,10 +46,15 @@ public:
 
         if (micros() > (lastStep + stepTime))
         {
-            digitalWrite(stepPin, 1);
-            digitalWrite(stepPin, 0);
+            _pulse = 1;
             lastStep = micros();
             motorSteps++;
         }
     };
+
+    void pulse()
+    {
+        digitalWrite(stepPin, 1);
+        digitalWrite(stepPin, 0);
+    }
 };

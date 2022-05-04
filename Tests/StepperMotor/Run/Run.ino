@@ -1,6 +1,6 @@
 #include "stepperMotor.h"
 
-stepperMotor motorRight(
+stepperMotor motorLeft(
     2,    // Step pin
     5,    // Direction pin
     8,    // Enable pin
@@ -9,7 +9,7 @@ stepperMotor motorRight(
     400   // Maximum velocity
 );
 
-stepperMotor motorLeft(
+stepperMotor motorRight(
     3,    // Step pin
     6,    // Direction pin
     8,    // Enable pin
@@ -21,9 +21,15 @@ stepperMotor motorLeft(
 void setup()
 {
 }
-
+long time = 0;
+int c = 0;
 void loop()
 {
-    motorRight.run(50);
-    motorLeft.run(50);
+  if (millis() > time)
+  {
+    c = c >= 100 ? c : c + 1;
+    time = millis() + 10;
+  }
+  motorLeft.run(c);
+  motorRight.run(c);
 }
