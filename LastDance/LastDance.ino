@@ -31,6 +31,7 @@ void setup()
 void loop()
 {
     robot.moveCentimeters(100, 100);
-    delay(150);
+    delay(1500);
     robot.moveCentimeters(-100, 100);
+    delay(1500);
 }
