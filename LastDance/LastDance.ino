@@ -24,14 +24,13 @@ robotBase robot(&motorRight, &motorLeft, &gyro, 61);
 
 void setup()
 {
-    Serial.begin(9600);
     gyro.init();
 }
 
 void loop()
 {
-    robot.moveCentimeters(100, 100);
+    robot.turn(90, 100);
     delay(1500);
-    robot.moveCentimeters(-100, 100);
+    robot.turn(90, -100);
     delay(1500);
 }
