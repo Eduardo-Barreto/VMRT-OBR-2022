@@ -1,5 +1,6 @@
-// Biblioteca criada para gerenciar as leituras de ângulos do MPU6050
-// Por Equipe VMRT
+/*
+    Módulo de configuração do sensor giroscópio e acelerômetro MPU 6050
+*/
 
 // Inclui as bibliotecas utilizadas
 #include <I2Cdev.h>
@@ -9,8 +10,7 @@
 class gyroSensor
 {
 private:
-    // Instância do sensor
-    MPU6050 mpu;
+    MPU6050 mpu; // Instância do sensor
 
     // Variáveis de controle do MPU
     uint8_t devStatus;      // Status de cada operação (0 = sucesso, 1 = erro)
@@ -19,18 +19,23 @@ private:
     uint8_t fifoBuffer[64]; // buffer da FIFO
 
     // Variáveis de movimentação e orientação
-    Quaternion q;        // [w, x, y, z]         quaternion container
-    VectorFloat gravity; // [x, y, z]            gravity vector
-    float ypr[3];        // [yaw, pitch, roll]   yaw/pitch/roll container and gravity vector
+    Quaternion q;        // [w, x, y, z]         Container Quaternion
+    VectorFloat gravity; // [x, y, z]            Vetor de gravidade
+    float ypr[3];        // [yaw, pitch, roll]   Vetor de Yaw, Pitch e Roll
 
 public:
     float Yaw, Pitch, Roll;
 
-    gyroSensor(){}
+    /**
+     * @brief: Construtor da classe
+     */
+    gyroSensor() {}
 
-    /*
-        @brief      Inicializa o MPU com as configurações necessárias
-    */
+    /**
+     * @brief: Inicializa o MPU com as configurações necessárias
+     *
+     * TODO: Verificar Offsets
+     */
     void init()
     {
         Wire.begin();
@@ -56,10 +61,10 @@ public:
         }
     }
 
-    /*
-        @brief      Lê os dados do MPU e atualiza as variáveis de ângulo:
-                    Yaw, Pitch, Roll
-    */
+    /**
+     * @brief: Lê os dados do MPU e atualiza as variáveis de ângulo:
+     *         Yaw, Pitch, Roll
+     */
     void read()
     {
         // Lê os dados do MPU
