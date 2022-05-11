@@ -14,6 +14,7 @@ private:
     int motorResolution;
     char maxVelocity;
     float acceleration;
+    int stepsCompleteAcceleration;
 
 public:
     /**
@@ -47,11 +48,12 @@ public:
      *
      * @example:
      *     robot.run(&velocity, steps, maxSteps, _accelTime, &accelControl);
+     *
+     * TODO: Novo cálculo
      */
-    void linearAccelerate(float *velocity, int step, int maxSteps, float _accelTime, unsigned long *accelControl)
+    void linearAccelerate(float *velocity, int step, int maxSteps, float _accelTime, int *lastStepControl)
     {
-        // Verifica se já está em tempo de acelerar
-        if (millis() < *accelControl)
+        if (step < *lastStepControl)
             return;
 
         // Calcula a aceleração de acordo com amplitude de velocidade e distância
@@ -64,13 +66,18 @@ public:
         }
 
         // Se a diferença entre a velocidade atual e a mínima é maior que 3 e estamos no segundo terço do movimento, desacelera
-        else if (((abs(*velocity) - 1) > 3) && (step >= (maxSteps / 3) * 2))
+        else if (((abs(*velocity) - 1) > 1) && (step >= maxSteps - stepsCompleteAcceleration))
         {
             *velocity = *velocity - (acceleration * (abs(maxVelocity) / maxVelocity));
         }
 
+        if (stepsCompleteAcceleration == 0 && abs(*velocity) >= abs(maxVelocity))
+        {
+            stepsCompleteAcceleration = step;
+        }
+
         // Atualiza o tempo necessário para acelerar novamente
-        *accelControl = millis() + _accelTime;
+        *lastStepControl = step;
     }
 
     /**
@@ -119,7 +126,7 @@ public:
      * @example:
      *      robot.moveCentimeters(100, 50); // Move os motores com 100% de velocidade por 50 centímetros
      */
-    void moveCentimeters(int centimeters, float velocity, float _accelTime = 2)
+    void moveCentimeters(int centimeters, float velocity, float _accelTime = 3)
     {
         maxVelocity = velocity;
         velocity = 1;
@@ -128,11 +135,13 @@ public:
         int LeftInitialSteps = motorLeft->motorSteps;
         int RightSteps = 0;
         int LeftSteps = 0;
-        unsigned long accelControl = 0;
+        stepsCompleteAcceleration = 0;
+        int lastStepControl = 0;
         while (RightSteps < maxSteps && LeftSteps < maxSteps)
         {
-            linearAccelerate(&velocity, LeftSteps, maxSteps, _accelTime, &accelControl);
+            linearAccelerate(&velocity, LeftSteps, maxSteps, _accelTime, &lastStepControl);
             this->move(velocity, velocity);
+            // Serial.println(velocity);
             RightSteps = motorRight->motorSteps - RightInitialSteps;
             LeftSteps = motorLeft->motorSteps - LeftInitialSteps;
         }
@@ -148,7 +157,7 @@ public:
      */
     void turn(int degrees, float velocity)
     {
-        char turnSide = degrees > 0 ? 1 : -1;
+        char turnSide = degrees < 0 ? 1 : -1;
 
         degrees = abs(degrees);
         maxVelocity = velocity;
@@ -156,18 +165,18 @@ public:
         gyro->read();
         int lastDegree = abs(gyro->Yaw);
         int degreesCounter = 0;
-        unsigned long accelController = 0;
+        int lastStepControl;
 
         while (degreesCounter < degrees)
         {
             gyro->read();
-            if (abs(gyro->Yaw) > convertDegrees(lastDegree + 1))
+            if (abs(int(gyro->Yaw) - lastDegree) > 0)
             {
                 degreesCounter++;
-                lastDegree = abs(gyro->Yaw);
+                lastDegree = int(abs(gyro->Yaw));
             }
-            linearAccelerate(&velocity, degreesCounter, degrees, 2, &accelController);
-            this->move(velocity * turnSide, velocity * turnSide * -1);
+            linearAccelerate(&velocity, degreesCounter, degrees, 2, &lastStepControl);
+            this->move(velocity * turnSide * -1, velocity * turnSide);
         }
     }
 };
