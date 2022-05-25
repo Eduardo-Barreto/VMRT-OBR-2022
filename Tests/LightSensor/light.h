@@ -11,14 +11,19 @@ private:
 public:
     int minRead;
     int maxRead;
+    byte blackThreshold;
+    byte minGreen;
+    byte maxGreen;
     int raw;
-    int light;
+    byte light;
+    bool black;
 
-    lightSensor(byte pin, int minRead, int maxRead)
+    lightSensor(byte pin, int minRead = 0, int maxRead = 1023, byte blackThreshold = 50)
     {
         this->pin = pin;
         this->minRead = minRead;
         this->maxRead = maxRead;
+        this->blackThreshold = blackThreshold;
         init();
     }
 
@@ -26,9 +31,10 @@ public:
     {
         this->raw = analogRead(pin);
         this->light = constrain(map(raw, minRead, maxRead, 100, 0), 0, 100);
+        this->black = light >= blackThreshold;
     }
 
-    int getRead()
+    byte getLight()
     {
         read();
         return this->light;

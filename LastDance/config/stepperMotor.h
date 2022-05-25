@@ -14,6 +14,7 @@ private:
     bool _pulse = 0;            // Flag para indicar se o motor deve mover
 
 public:
+    bool lock = 0;                // Trava o motor quando necessário
     unsigned long motorSteps = 0; // Quantidade de steps realizados
     int resolution;               // Resolução do motor (steps por revolução)
 
@@ -74,6 +75,10 @@ public:
      */
     void run(char velocity)
     {
+        if (lock)
+        {
+            return;
+        }
         // Configura a direção do movimento (frente ou trás)
         digitalWrite(directionPin, ((velocity < 0)) ? 1 : 0);
 
@@ -115,5 +120,15 @@ public:
 
         // Desabilita a variável de pulso
         _pulse = 0;
+    }
+
+    void on()
+    {
+        digitalWrite(enablePin, 0);
+    }
+
+    void off()
+    {
+        digitalWrite(enablePin, 1);
     }
 };

@@ -3,7 +3,7 @@
 gyroSensor gyro;
 
 void setup()
-{
+{ 
   Serial.begin(2000000);
     gyro.init();
 }

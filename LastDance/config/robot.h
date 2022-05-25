@@ -1,6 +1,5 @@
 #include "stepperMotor.h"
 #include "gyro.h"
-#include "calc.h"
 
 #define PI 3.1415926535897932384626433832795
 
@@ -28,13 +27,13 @@ public:
      * @example:
      *      robotBase robot(&motorRight, &motorLeft, &gyro, 61);
      */
-    robotBase(stepperMotor *motorRight, stepperMotor *motorLeft, gyroSensor *gyro, byte wheelDiameter)
+    robotBase(stepperMotor *_motorRight, stepperMotor *_motorLeft, gyroSensor *_gyro, byte _wheelDiameter)
     {
         // Atribui as variáveis de acordo com os parâmetros
-        this->motorRight = motorRight;
-        this->motorLeft = motorLeft;
-        this->gyro = gyro;
-        this->wheelCircunference = wheelDiameter * PI;
+        this->motorRight = _motorRight;
+        this->motorLeft = _motorLeft;
+        this->gyro = _gyro;
+        this->wheelCircunference = _wheelDiameter * PI;
         this->motorResolution = motorRight->resolution;
     }
 
@@ -43,13 +42,11 @@ public:
      * @param: velocity: ponteiro para controlar a velocidade
      * @param: steps: passo atual (para saber a posição atual do motor)
      * @param: maxSteps: máximo de passos dessa operação (para saber a posição final)
-     * @param: _accelTime: tempo entre a aceleração (em milissegundos)
+     * @param: accelTime: tempo entre a aceleração (em milissegundos)
      * @param: accelControl: ponteiro para controlar a aceleração
      *
      * @example:
      *     robot.run(&velocity, steps, maxSteps, _accelTime, &accelControl);
-     *
-     * TODO: Novo cálculo
      */
     void linearAccelerate(float *velocity, int step, int maxSteps, float _accelTime, int *lastStepControl)
     {
@@ -83,7 +80,7 @@ public:
     /**
      * @brief: Move os motores do robô com a velocidade desejada
      * @param: velocityRight: velocidade do motor direito
-     * @param velocityLeft: velocidade do motor esquerdo
+     * @param: velocityLeft: velocidade do motor esquerdo
      *
      * @example:
      *     robot.move(100, 100); // Move os motores com 100% de velocidade
@@ -139,7 +136,14 @@ public:
         int lastStepControl = 0;
         while (RightSteps < maxSteps && LeftSteps < maxSteps)
         {
-            linearAccelerate(&velocity, LeftSteps, maxSteps, _accelTime, &lastStepControl);
+            if (_accelTime == 0)
+            {
+                linearAccelerate(&velocity, LeftSteps, maxSteps, _accelTime, &lastStepControl);
+            }
+            else
+            {
+                velocity = maxVelocity;
+            }
             this->move(velocity, velocity);
             // Serial.println(velocity);
             RightSteps = motorRight->motorSteps - RightInitialSteps;

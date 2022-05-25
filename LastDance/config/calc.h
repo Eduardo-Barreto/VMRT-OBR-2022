@@ -15,7 +15,7 @@ Módulo responsável pelas funções relacionadas a matemática
  */
 bool interval(float value, float min, float max)
 {
-    return (value >= min && value <= max);
+    return ((value >= min) && (value <= max));
 }
 
 /**
