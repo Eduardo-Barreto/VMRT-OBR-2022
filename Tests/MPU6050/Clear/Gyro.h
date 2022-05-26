@@ -27,12 +27,12 @@ public:
     float Yaw, Pitch, Roll;
 
     /**
-     * @brief: Construtor da classe
+     * @brief Construtor da classe
      */
     gyroSensor() {}
 
     /**
-     * @brief: Inicializa o MPU com as configurações necessárias
+     * @brief Inicializa o MPU com as configurações necessárias
      *
      * TODO: Verificar Offsets
      */
@@ -62,7 +62,7 @@ public:
     }
 
     /**
-     * @brief: Lê os dados do MPU e atualiza as variáveis de ângulo:
+     * @brief Lê os dados do MPU e atualiza as variáveis de ângulo:
      *         Yaw, Pitch, Roll
      */
     void read()

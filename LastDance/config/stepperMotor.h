@@ -1,7 +1,3 @@
-/*
-
-*/
-
 class stepperMotor
 {
 private:
@@ -21,14 +17,14 @@ public:
     /**
      * @brief Construtor da classe de motor de passo
 
-     * @param: stepPin: pino para pulsos de step
-     * @param: directionPin: pino para controle de direção
-     * @param: enablePin: pino de habilitação
-     * @param: resolution: resolução do motor (steps por revolução)
-     * @param: minimumVelocity: velocidade mínima (tempo entre steps)
-     * @param: maximumVelocity: velocidade máxima (tempo entre steps)
+     * @param stepPin: pino para pulsos de step
+     * @param directionPin: pino para controle de direção
+     * @param enablePin: pino de habilitação
+     * @param resolution: resolução do motor (steps por revolução)
+     * @param minimumVelocity: velocidade mínima (tempo entre steps)
+     * @param maximumVelocity: velocidade máxima (tempo entre steps)
      *
-     * @example:
+     * @example
      *      stepperMotor motor(
      *          2,    // Step pin
      *          5,    // Direction pin
@@ -53,23 +49,24 @@ public:
     }
 
     /**
-     * @brief: Inicializa o motor de passo com as configurações
+     * @brief Inicializa o motor de passo com as configurações
      */
     void init()
     {
+        // Configura os pinos do motor como OUTPUT
         pinMode(stepPin, OUTPUT);
         pinMode(directionPin, OUTPUT);
         pinMode(enablePin, OUTPUT);
 
         // Habilita o motor
-        digitalWrite(enablePin, 0);
+        on();
     }
 
     /**
-     * @brief: Configura o motor de passo para mover-se
-     * @param: velocity: velocidade desejada (0% a 100%)
+     * @brief Configura o motor de passo para mover-se
+     * @param velocity: velocidade desejada (0% a 100%)
      *
-     * @example:
+     * @example
      *      motor.run(100); // Configura o motor para mover-se a 100% de velocidade
      *      motor.pulse();  // Move o motor
      */
@@ -102,9 +99,9 @@ public:
     };
 
     /**
-     * @brief: Move o motor de passo em um pulso
+     * @brief Move o motor de passo em um pulso
      *
-     * @example:
+     * @example
      *      motor.run(100); // Configura o motor para mover-se a 100% de velocidade
      *      motor.pulse();  // Move o motor
      */
@@ -122,11 +119,17 @@ public:
         _pulse = 0;
     }
 
+    /**
+     * @brief Habilita o motor de passo
+     */
     void on()
     {
         digitalWrite(enablePin, 0);
     }
 
+    /**
+     * @brief Desabilita o motor de passo
+     */
     void off()
     {
         digitalWrite(enablePin, 1);

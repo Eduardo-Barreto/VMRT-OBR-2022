@@ -6,25 +6,25 @@
 class robotBase
 {
 private:
-    stepperMotor *motorRight;
-    stepperMotor *motorLeft;
-    gyroSensor *gyro;
-    float wheelCircunference;
-    int motorResolution;
-    char maxVelocity;
-    float acceleration;
-    int stepsCompleteAcceleration;
+    stepperMotor *motorRight;      // Motor direito
+    stepperMotor *motorLeft;       // Motor esquerdo
+    gyroSensor *gyro;              // Sensor de giroscópio
+    float wheelCircunference;      // Circunferência do roda
+    int motorResolution;           // Resolução do motor (step por revolução)
+    char maxVelocity;              // Velocidade máxima para controle de aceleração
+    float acceleration;            // Aceleração do motor
+    int stepsCompleteAcceleration; // Número de steps para acelerar
 
 public:
     /**
      * @brief Construtor da classe de base do robô
-     * @param: motorRight: ponteiro do motor direito
-     * @param: motorLeft: ponteiro do motor esquerdo
-     * @param: gyro: ponteiro do giroscópio
-     * @param: wheelCircunference: circunferência da roda
+     * @param motorRight: ponteiro do motor direito
+     * @param motorLeft: ponteiro do motor esquerdo
+     * @param gyro: ponteiro do giroscópio
+     * @param wheelCircunference: circunferência da roda
      *
      *
-     * @example:
+     * @example
      *      robotBase robot(&motorRight, &motorLeft, &gyro, 61);
      */
     robotBase(stepperMotor *_motorRight, stepperMotor *_motorLeft, gyroSensor *_gyro, byte _wheelDiameter)
@@ -38,14 +38,14 @@ public:
     }
 
     /**
-     * @brief: Controla a velocidade do motor de passo, criando uma acelearção linear em trapézio
-     * @param: velocity: ponteiro para controlar a velocidade
-     * @param: steps: passo atual (para saber a posição atual do motor)
-     * @param: maxSteps: máximo de passos dessa operação (para saber a posição final)
-     * @param: accelTime: tempo entre a aceleração (em milissegundos)
-     * @param: accelControl: ponteiro para controlar a aceleração
+     * @brief Controla a velocidade do motor de passo, criando uma acelearção linear em trapézio
+     * @param velocity: ponteiro para controlar a velocidade
+     * @param steps: passo atual (para saber a posição atual do motor)
+     * @param maxSteps: máximo de passos dessa operação (para saber a posição final)
+     * @param accelTime: tempo entre a aceleração (em milissegundos)
+     * @param accelControl: ponteiro para controlar a aceleração
      *
-     * @example:
+     * @example
      *     robot.run(&velocity, steps, maxSteps, _accelTime, &accelControl);
      */
     void linearAccelerate(float *velocity, int step, int maxSteps, float _accelTime, int *lastStepControl)
@@ -78,11 +78,11 @@ public:
     }
 
     /**
-     * @brief: Move os motores do robô com a velocidade desejada
-     * @param: velocityRight: velocidade do motor direito
-     * @param: velocityLeft: velocidade do motor esquerdo
+     * @brief Move os motores do robô com a velocidade desejada
+     * @param velocityRight: velocidade do motor direito
+     * @param velocityLeft: velocidade do motor esquerdo
      *
-     * @example:
+     * @example
      *     robot.move(100, 100); // Move os motores com 100% de velocidade
      */
     void move(int velocityRight, int velocityLeft)
@@ -94,12 +94,12 @@ public:
     }
 
     /**
-     * @brief: Move os motores do robô durante o tempo desejado com a velocidade desejada
-     * @param: velocityRight: velocidade do motor direito
+     * @brief Move os motores do robô durante o tempo desejado com a velocidade desejada
+     * @param velocityRight: velocidade do motor direito
      * @param velocityLeft: velocidade do motor esquerdo
      * @param time: tempo de movimento em milissegundos
      *
-     * @example:
+     * @example
      *    robot.moveTime(100, 100, 1000); // Move os motores com 100% de velocidade por 1 segundo
      *
      *
@@ -115,12 +115,12 @@ public:
     }
 
     /**
-     * @brief: Move os motores do robô pela distância desejada com a velocidade desejada
-     * @param: centimeters: distância em centímetros a ser percorrida
-     * @param _velocity: velocidade desejada
-     * @param _accelTime (opcional): tempo entre a aceleração (em milissegundos)
+     * @brief Move os motores do robô pela distância desejada com a velocidade desejada
+     * @param centimeters: distância em centímetros a ser percorrida
+     * @param velocity: velocidade desejada
+     * @param accelTime (opcional): tempo entre a aceleração (em milissegundos)
      *
-     * @example:
+     * @example
      *      robot.moveCentimeters(100, 50); // Move os motores com 100% de velocidade por 50 centímetros
      */
     void moveCentimeters(int centimeters, float velocity, float _accelTime = 3)
@@ -136,7 +136,7 @@ public:
         int lastStepControl = 0;
         while (RightSteps < maxSteps && LeftSteps < maxSteps)
         {
-            if (_accelTime == 0)
+            if (_accelTime != 0)
             {
                 linearAccelerate(&velocity, LeftSteps, maxSteps, _accelTime, &lastStepControl);
             }
@@ -145,18 +145,17 @@ public:
                 velocity = maxVelocity;
             }
             this->move(velocity, velocity);
-            // Serial.println(velocity);
             RightSteps = motorRight->motorSteps - RightInitialSteps;
             LeftSteps = motorLeft->motorSteps - LeftInitialSteps;
         }
     }
 
     /**
-     * @brief: Faz uma curva com os graus desejados com a velocidade desejada
-     * @param: degrees: graus a serem percorridos
+     * @brief Faz uma curva com os graus desejados com a velocidade desejada
+     * @param degrees: graus a serem percorridos
      * @param _velocity: velocidade desejada
      *
-     * @example:
+     * @example
      *     robot.turnDegrees(90, 50); // Faz uma curva de 90 graus com 50% de velocidade
      */
     void turn(int degrees, float velocity)
