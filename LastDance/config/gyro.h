@@ -53,7 +53,6 @@ public:
         {
             mpu.CalibrateAccel(6);
             mpu.CalibrateGyro(6);
-            mpu.PrintActiveOffsets();
 
             mpu.setDMPEnabled(true);
 

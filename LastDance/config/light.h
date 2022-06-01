@@ -48,7 +48,7 @@ public:
      * @param maxRead: Valor máximo lido na calibração
      * @param blackThreshold: Valor mínimo para considerar que o sensor está lendo preto
      */
-    lightSensor(byte pin, int minRead = 0, int maxRead = 1023, byte blackThreshold = 50)
+    lightSensor(byte pin, int minRead = 1023, int maxRead = 0, byte blackThreshold = 50)
     {
         this->pin = pin;
         this->minRead = minRead;

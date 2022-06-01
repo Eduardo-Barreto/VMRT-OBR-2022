@@ -39,10 +39,6 @@ void calibrateLineFollower()
  */
 void runLineFollower(byte targetPower, byte turnPower)
 {
-    for (int i = 0; i < 7; i++)
-    {
-        lineSensors[i].read();
-    }
     byte rightLight = abs(lineSensors[2].getLight());
     byte leftLight = abs(lineSensors[4].getLight());
 
@@ -51,12 +47,12 @@ void runLineFollower(byte targetPower, byte turnPower)
     if (diff >= borderThreshold)
     {
         // esquerda
-        robot.move(targetPower + turnPower, 0);
+        robot.move(targetPower + turnPower, targetPower - turnPower);
     }
     else if (diff <= -borderThreshold)
     {
         // direita
-        robot.move(0, targetPower + turnPower);
+        robot.move(targetPower - turnPower, targetPower + turnPower);
     }
     else
     {
@@ -64,21 +60,33 @@ void runLineFollower(byte targetPower, byte turnPower)
     }
 }
 
-void proportional(int targetPower, int KP)
+char lastDiff = 0;
+float ISum = 0;
+void proportional(int targetPower, float KP, float KD, float KI)
 {
-    for (int i = 0; i < 7; i++)
-    {
-        lineSensors[i].read();
-    }
     byte rightLight = abs(lineSensors[2].getLight());
     byte leftLight = abs(lineSensors[4].getLight());
+    byte rightCornerLight = abs(lineSensors[1].getLight());
+    byte leftCornerLight = abs(lineSensors[5].getLight());
 
-    char diff = (rightLight - leftLight);
+    float right = (rightLight + (rightCornerLight * 1.2));
+    float left = (leftLight + (leftCornerLight * 1.2));
+    float diff = (left - right);
 
-    int leftPower = targetPower + (diff * KP);
-    int rightPower = targetPower - (diff * KP);
+    ISum += diff;
+
+    float P = (diff * KP);
+    float I = ISum * KI;
+    float D = (diff - lastDiff) * KD;
+
+    float PID = P + I + D;
+
+    float leftPower = targetPower + PID;
+    float rightPower = targetPower - PID;
 
     robot.move(leftPower, rightPower);
+    DebugLogln(String(P) + "\t" + String(I) + "\t" + String(D) + "\t" + String(PID));
+    lastDiff = diff;
 }
 
 void alignLine(int _timeout = 750)
