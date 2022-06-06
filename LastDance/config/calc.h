@@ -2,6 +2,8 @@
 Módulo responsável pelas funções relacionadas a matemática
 */
 
+// #define constrain(amt,low,high) ((amt)<(low)?(low):((amt)>(high)?(high):(amt)))
+
 /**
  * @brief Retorna se um valor está dentro de um intervalo
  * @param value - valor a ser verificado
@@ -13,10 +15,9 @@ Módulo responsável pelas funções relacionadas a matemática
  *      bool a = interval(5, 1, 10);
  *      // a = true
  */
-bool interval(float value, float min, float max)
-{
-    return ((value >= min) && (value <= max));
-}
+#define interval(value, min, max) ((value) >= (min) && (value) <= (max))
+
+#define proximity(value, target, tolerance) (interval(value, target - tolerance, target + tolerance))
 
 /**
  * @brief Garante que um valor está dentro do intervalo de 360º, retornando o módulo da divisão dele por 360
@@ -27,7 +28,8 @@ bool interval(float value, float min, float max)
  *      int a = convertDegrees(280+90);
  *     // a = 10
  */
-int convertDegrees(float degrees)
+
+int convertDegrees(int value)
 {
-    return int(degrees) % 360;
+    return value % 360;
 }
