@@ -16,8 +16,6 @@ Módulo de configuração dos sensores de luz
 int light[7];
 int green[2]; */
 
-#include "calc.h"
-
 class lightSensor
 {
 private:
