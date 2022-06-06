@@ -1,9 +1,9 @@
 # Digitais
 ## Motores
 - stepRight 2
-- stepLeft 3
+- stepLeft 4
 - directionRight 5
-- directionLeft 6
+- directionLeft 7
 - motorEnable 8
 ### Servos
 - pinServe0 4

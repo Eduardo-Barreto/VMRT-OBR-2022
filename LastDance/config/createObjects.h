@@ -11,8 +11,8 @@ stepperMotor motorRight(
 );
 
 stepperMotor motorLeft(
-    3,    // Step pin
-    6,    // Direction pin
+    4,    // Step pin
+    7,    // Direction pin
     8,    // Enable pin
     400,  // Resolution
     7000, // Minimum velocity
