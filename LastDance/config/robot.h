@@ -1,6 +1,8 @@
 #include "stepperMotor.h"
 #include "gyro.h"
 
+#include "calc.h"
+
 #define PI 3.1415926535897932384626433832795
 
 class robotBase
@@ -157,29 +159,20 @@ public:
      *
      * @example
      *     robot.turnDegrees(90, 50); // Faz uma curva de 90 graus com 50% de velocidade
+     *     robot.turnDegrees(-90, 50); // Faz uma curva de -90 graus com 50% de velocidade
      */
     void turn(int degrees, float velocity)
     {
         char turnSide = degrees < 0 ? 1 : -1;
+        velocity = min(velocity, 85);
 
-        degrees = abs(degrees);
-        maxVelocity = velocity;
-        velocity = 1;
         gyro->read();
-        int lastDegree = abs(gyro->Yaw);
-        int degreesCounter = 0;
-        int lastStepControl;
+        int targetAngle = convertDegrees((gyro->Yaw + degrees));
 
-        while (degreesCounter < degrees)
+        while (!proximity(gyro->Yaw, targetAngle, 1))
         {
+            this->move(velocity * -turnSide, velocity * turnSide);
             gyro->read();
-            if (abs(int(gyro->Yaw) - lastDegree) > 0)
-            {
-                degreesCounter++;
-                lastDegree = int(abs(gyro->Yaw));
-            }
-            linearAccelerate(&velocity, degreesCounter, degrees, 2, &lastStepControl);
-            this->move(velocity * turnSide * -1, velocity * turnSide);
         }
     }
 };
