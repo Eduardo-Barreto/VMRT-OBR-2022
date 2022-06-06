@@ -1,5 +1,30 @@
-int borderThreshold = 50;
-int blackThreshold = 35;
+int borderThreshold = 50; // Valor mínimo para considerar que o sensor está diferente do seu oposto (direita-esquerda)
+int blackThreshold = 35;  // Valor máximo para considerar que o sensor está lendo preto
+
+byte rightLight;       // Valor lido do sensor de luz da direita
+byte leftLight;        // Valor lido do sensor de luz da esquerda
+byte borderRightLight; // Valor lido do sensor de luz da borda da direita
+byte borderLeftLight;  // Valor lido do sensor de luz da borda da esquerda
+
+int centerDiff; // Diferença entre os valores lido do sensor de luz da direita e da esquerda
+int borderDiff; // Diferença entre os valores lido do sensor de luz da borda da direita e da borda da esquerda
+
+unsigned long lastCorrection;        // Variável para armazenar o tempo do último ajuste
+unsigned long incrementVelocityTime; // Variável para armazenar o tempo do próximo ajuste de velocidade
+
+/**
+ * @brief Atualiza os valores lido dos sensores de luz e as variáveis de controle
+ */
+void readColors()
+{
+    rightLight = lineSensors[2].getLight();
+    leftLight = lineSensors[4].getLight();
+    borderRightLight = lineSensors[0].getLight();
+    borderLeftLight = lineSensors[6].getLight();
+
+    centerDiff = rightLight - leftLight;
+    borderDiff = borderRightLight - borderLeftLight;
+}
 
 /**
  * @brief Calibra os sensores de luz para a iluminação atual
@@ -31,122 +56,140 @@ void calibrateLineFollower()
     }
 }
 
-/**
- * @brief Segue a linha
- *
- * @param targetPower: Velocidade padrão para o movimento quando está centralizado na linha
- * @param turnPower: diferença da velocidade para o movimento quando está na borda da linha
- */
-void runLineFollower(byte targetPower, byte turnPower)
+void printCalibrationFollower()
 {
-    byte rightLight = abs(lineSensors[2].getLight());
-    byte leftLight = abs(lineSensors[4].getLight());
-
-    char diff = (rightLight - leftLight);
-
-    if (diff >= borderThreshold)
+    // print all calibration for lineSensors
+    for (int i = 0; i < 7; i++)
     {
-        // esquerda
-        robot.move(targetPower + turnPower, targetPower - turnPower);
-    }
-    else if (diff <= -borderThreshold)
-    {
-        // direita
-        robot.move(targetPower - turnPower, targetPower + turnPower);
-    }
-    else
-    {
-        robot.move(targetPower, targetPower);
+        DebugLog("lineSensors[");
+        DebugLog(i);
+        DebugLog("].minRead = ");
+        DebugLog(lineSensors[i].minRead);
+        DebugLogln(";");
+        DebugLog("lineSensors[");
+        DebugLog(i);
+        DebugLog("].maxRead = ");
+        DebugLog(lineSensors[i].maxRead);
+        DebugLogln(";");
     }
 }
 
-char lastDiff = 0;
-float ISum = 0;
-void proportional(int targetPower, float KP, float KD, float KI)
-{
-    byte rightLight = abs(lineSensors[2].getLight());
-    byte leftLight = abs(lineSensors[4].getLight());
-    byte rightCornerLight = abs(lineSensors[1].getLight());
-    byte leftCornerLight = abs(lineSensors[5].getLight());
-
-    float right = (rightLight + (rightCornerLight * 1.2));
-    float left = (leftLight + (leftCornerLight * 1.2));
-    float diff = (left - right);
-
-    ISum += diff;
-
-    float P = (diff * KP);
-    float I = ISum * KI;
-    float D = (diff - lastDiff) * KD;
-
-    float PID = P + I + D;
-
-    float leftPower = targetPower + PID;
-    float rightPower = targetPower - PID;
-
-    robot.move(leftPower, rightPower);
-    DebugLogln(String(P) + "\t" + String(I) + "\t" + String(D) + "\t" + String(PID));
-    lastDiff = diff;
-}
-
-void alignLine(int _timeout = 750)
+void alignLine(int force = 50, int _timeout = 750)
 {
     char diff = (lineSensors[2].getLight() - lineSensors[4].getLight());
-    bool right = 0;
 
     unsigned long timeout = millis() + _timeout;
 
     while ((diff > borderThreshold) && (millis() < timeout))
     {
         diff = (lineSensors[2].getLight() - lineSensors[4].getLight());
-        robot.move(50, -50);
+        robot.move(force, -force);
     }
 
     timeout = millis() + _timeout;
     while ((diff < -borderThreshold) && (millis() < timeout))
     {
         diff = (lineSensors[2].getLight() - lineSensors[4].getLight());
-        robot.move(-50, 50);
+        robot.move(-force, force);
     }
 }
 
 /**
  * @brief Busca por curvas
+ *
+ * @param curveForce: Força aplicada ao robo na curva
  */
-void checkTurn()
+bool checkTurn(int curveForce = 90)
 {
-    // Lê todos os sensores
-    for (int i = 0; i < 7; i++)
+
+    if (borderDiff >= borderThreshold)
     {
-        lineSensors[i].read();
-    }
-
-    // Armazena as leituras dos sensores das pontas
-    byte borderRightLight = abs(lineSensors[0].getLight());
-    byte borderLeftLight = abs(lineSensors[6].getLight());
-
-    // Calcula a diferença entre as leituras
-    int diff = (borderRightLight - borderLeftLight);
-
-    if (diff >= borderThreshold)
-    {
+        alignLine();
         // direita
-        robot.moveCentimeters(7, 70, 0);
-        // mover à direita até o sensor 3 encontrar o preto
-        while (lineSensors[3].getLight() > blackThreshold)
+        robot.turn(-5, 60);
+
+        readColors();
+
+        robot.moveCentimeters(7, 70);
+        // mover à direita até o sensor 3 ou 4 encontrar o preto
+        while (
+            lineSensors[3].getLight() > blackThreshold &&
+            lineSensors[4].getLight() > blackThreshold)
         {
-            robot.move(50, -50);
+            robot.move(curveForce, -curveForce);
         }
+        alignLine();
+        targetPower = masterPower - 5;
+        lastCorrection = millis();
+        return true;
     }
-    else if (diff <= -borderThreshold)
+    else if (borderDiff <= -borderThreshold)
     {
+        alignLine();
         // esquerda
-        robot.moveCentimeters(7, 70, 0);
-        // mover à esquerda até o sensor 3 encontrar o preto
-        while (lineSensors[3].getLight() > blackThreshold)
+        robot.turn(5, 60);
+
+        readColors();
+
+        robot.moveCentimeters(7, 70);
+        // mover à esquerda até o sensor 3 ou 4 encontrar o preto
+        while (
+            lineSensors[3].getLight() > blackThreshold &&
+            lineSensors[2].getLight() > blackThreshold)
         {
-            robot.move(-50, 50);
+            robot.move(-curveForce, curveForce);
         }
+        alignLine();
+        targetPower = masterPower - 5;
+        lastCorrection = millis();
+        return true;
     }
-    alignLine();
+
+    return false;
+}
+
+/**
+ * @brief Segue a linha
+ *
+ * @param increaseTargetPower: Diferença na velocidade padrão para o movimento quando está centralizado na linha
+ * @param increaseTurnPower: diferença da velocidade para o movimento quando está na borda da linha
+ */
+void runLineFollower(byte increaseTargetPower = 0)
+{
+    if (targetPower < maxPower && millis() > incrementVelocityTime)
+    {
+        incrementVelocityTime = millis() + 50;
+        targetPower++;
+    }
+
+    readColors();
+
+    if (checkTurn(targetPower))
+        return;
+
+    unsigned long timeout = millis() + 250;
+    while ((centerDiff > borderThreshold) && (millis() < timeout))
+    {
+        readColors();
+        if (checkTurn())
+            return;
+
+        robot.move(targetPower, -targetPower);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+
+    timeout = millis() + 250;
+    while ((centerDiff < -borderThreshold) && (millis() < timeout))
+    {
+        readColors();
+        if (checkTurn())
+            return;
+
+        robot.move(-targetPower, targetPower);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+
+    robot.move(targetPower, targetPower);
 }
