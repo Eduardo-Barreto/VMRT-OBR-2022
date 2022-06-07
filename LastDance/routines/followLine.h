@@ -1,6 +1,8 @@
 int borderThreshold = 50; // Valor mínimo para considerar que o sensor está diferente do seu oposto (direita-esquerda)
 int blackThreshold = 35;  // Valor máximo para considerar que o sensor está lendo preto
 
+byte centerRightLight; // Valor lido do sensor de luz do meio da direita
+byte centerLeftLight;  // Valor lido do sensor de luz do meio da esquerda
 byte rightLight;       // Valor lido do sensor de luz da direita
 byte leftLight;        // Valor lido do sensor de luz da esquerda
 byte borderRightLight; // Valor lido do sensor de luz da borda da direita
@@ -17,12 +19,14 @@ unsigned long incrementVelocityTime; // Variável para armazenar o tempo do pró
  */
 void readColors()
 {
-    rightLight = lineSensors[2].getLight();
-    leftLight = lineSensors[4].getLight();
     borderRightLight = lineSensors[0].getLight();
+    rightLight = lineSensors[1].getLight();
+    centerRightLight = lineSensors[2].getLight();
+    centerLeftLight = lineSensors[4].getLight();
+    leftLight = lineSensors[5].getLight();
     borderLeftLight = lineSensors[6].getLight();
 
-    centerDiff = rightLight - leftLight;
+    centerDiff = (centerRightLight + rightLight * 1.15) - (centerLeftLight + leftLight * 1.15);
     borderDiff = borderRightLight - borderLeftLight;
 }
 
