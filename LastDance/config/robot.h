@@ -89,10 +89,10 @@ public:
      */
     void move(int velocityRight, int velocityLeft)
     {
-        motorRight->run(velocityRight);
-        motorLeft->run(velocityLeft);
-        motorRight->pulse();
-        motorLeft->pulse();
+        motorRight->set(velocityRight);
+        motorLeft->set(velocityLeft);
+        motorRight->run();
+        motorLeft->run();
     }
 
     /**

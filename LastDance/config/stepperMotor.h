@@ -67,10 +67,10 @@ public:
      * @param velocity: velocidade desejada (0% a 100%)
      *
      * @example
-     *      motor.run(100); // Configura o motor para mover-se a 100% de velocidade
-     *      motor.pulse();  // Move o motor
+     *      motor.set(100); // Configura o motor para mover-se a 100% de velocidade
+     *      motor.run();  // Move o motor
      */
-    void run(char velocity)
+    void set(char velocity)
     {
         if (lock)
         {
@@ -102,10 +102,10 @@ public:
      * @brief Move o motor de passo em um pulso
      *
      * @example
-     *      motor.run(100); // Configura o motor para mover-se a 100% de velocidade
-     *      motor.pulse();  // Move o motor
+     *      motor.set(100); // Configura o motor para mover-se a 100% de velocidade
+     *      motor.run();  // Move o motor
      */
-    void pulse()
+    void run()
     {
         // Verifica se o motor deve mover
         if (!_pulse)
