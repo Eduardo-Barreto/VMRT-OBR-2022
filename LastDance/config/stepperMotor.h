@@ -58,8 +58,8 @@ public:
         pinMode(directionPin, OUTPUT);
         pinMode(enablePin, OUTPUT);
 
-        // Habilita o motor
-        on();
+        // Desabilita o motor
+        off();
     }
 
     /**
