@@ -29,6 +29,9 @@ lightSensor s4(65);
 lightSensor s5(66);
 lightSensor s6(67);
 
+lightSensor greenRight(68);
+lightSensor greenLeft(69);
+
 lightSensor lineSensors[7] = {
     s0,
     s1,

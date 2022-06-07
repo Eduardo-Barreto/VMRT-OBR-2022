@@ -63,7 +63,7 @@ public:
         this->raw = analogRead(pin);
         this->light = constrain(map(raw, minRead, maxRead, 100, 0), 0, 100);
         this->black = light >= blackThreshold;
-        this->green = (light >= minGreen && light <= maxGreen);
+        this->green = (raw >= minGreen && raw <= maxGreen);
     }
 
     /**
@@ -88,12 +88,20 @@ public:
         return this->raw;
     }
 
+    bool getGreen()
+    {
+        read();
+        return this->green;
+    }
+
     /**
      * @brief Atualiza o intervalo de luz considerado como verde
      */
-    void setGreen(byte _read, byte _interval)
+    void setGreen()
     {
-        this->minGreen = _read - _interval;
-        this->maxGreen = _read + _interval;
+        this->read();
+        int interval = map(5, 0, 100, minRead, maxRead);
+        this->minGreen = light - interval;
+        this->maxGreen = light + interval;
     }
 };

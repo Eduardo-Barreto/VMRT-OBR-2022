@@ -23,6 +23,7 @@ int turnPower = masterPower;
 
 void setup()
 {
+    pinMode(LED_BUILTIN, OUTPUT);
     gyro.init();
 #if CALIBRATE_LINE_SENSORS == 1
     calibrateLineFollower();
@@ -30,20 +31,21 @@ void setup()
     calibrateLineFollower();
     delay(500);
 #else
-    lineSensors[0].minRead = 561;
-    lineSensors[0].maxRead = 959;
-    lineSensors[1].minRead = 365;
-    lineSensors[1].maxRead = 940;
-    lineSensors[2].minRead = 442;
-    lineSensors[2].maxRead = 932;
-    lineSensors[3].minRead = 616;
-    lineSensors[3].maxRead = 972;
-    lineSensors[4].minRead = 410;
-    lineSensors[4].maxRead = 946;
-    lineSensors[5].minRead = 355;
-    lineSensors[5].maxRead = 935;
-    lineSensors[6].minRead = 297;
-    lineSensors[6].maxRead = 908;
+    lineSensors[0].minRead = 384;
+    lineSensors[0].maxRead = 947;
+    lineSensors[1].minRead = 119;
+    lineSensors[1].maxRead = 917;
+    lineSensors[2].minRead = 241;
+    lineSensors[2].maxRead = 936;
+    lineSensors[3].minRead = 437;
+    lineSensors[3].maxRead = 960;
+    lineSensors[4].minRead = 141;
+    lineSensors[4].maxRead = 927;
+    lineSensors[5].minRead = 82;
+    lineSensors[5].maxRead = 920;
+    lineSensors[6].minRead = 43;
+    lineSensors[6].maxRead = 896;
+    // TODO: Calibrar sensores do verde
 #endif
     delay(1500);
     DebugInit(115200);
@@ -58,11 +60,19 @@ void setup()
     pinMode(38, INPUT_PULLUP);
     while (digitalRead(38) == 1)
     {
+        digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
+        delay(100);
     }
     while (digitalRead(38) == 0)
     {
     }
-    delay(500);
+    greenRight.setGreen();
+    greenLeft.setGreen();
+
+    delay(3000);
+
+    motorLeft.on();
+    motorRight.on();
 }
 
 void debugLoop()
@@ -75,5 +85,9 @@ void loop()
     debugLoop();
 #else
     runLineFollower();
+    if (greenLeft.getGreen() || greenRight.getGreen())
+    {
+        delay(100);
+    }
 #endif
 }
