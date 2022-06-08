@@ -56,6 +56,19 @@ public:
     }
 
     /**
+     * @brief Atualiza o intervalo de luz considerado como verde
+     *
+     * @param offset: Valor de offset para o intervalo de luz considerado como verde
+     */
+    void setGreen(byte offset = 5)
+    {
+        this->read();
+        int interval = map(offset, 0, 100, minRead, maxRead);
+        this->minGreen = raw - interval;
+        this->maxGreen = raw + interval;
+    }
+
+    /**
      * @brief Atualiza o valor lido do sensor de luz
      */
     void read()
@@ -64,17 +77,6 @@ public:
         this->light = constrain(map(raw, minRead, maxRead, 100, 0), 0, 100);
         this->black = light >= blackThreshold;
         this->green = (raw >= minGreen && raw <= maxGreen);
-    }
-
-    /**
-     * @brief Atualiza e retorna a luz lida no sensor de luz
-     *
-     * @return int: Valor lido do sensor de luz
-     */
-    byte getLight()
-    {
-        read();
-        return this->light;
     }
 
     /**
@@ -88,20 +90,20 @@ public:
         return this->raw;
     }
 
+    /**
+     * @brief Atualiza e retorna a luz lida no sensor de luz
+     *
+     * @return int: Valor lido do sensor de luz
+     */
+    byte getLight()
+    {
+        read();
+        return this->light;
+    }
+
     bool getGreen()
     {
         read();
         return this->green;
-    }
-
-    /**
-     * @brief Atualiza o intervalo de luz considerado como verde
-     */
-    void setGreen()
-    {
-        this->read();
-        int interval = map(5, 0, 100, minRead, maxRead);
-        this->minGreen = light - interval;
-        this->maxGreen = light + interval;
     }
 };
