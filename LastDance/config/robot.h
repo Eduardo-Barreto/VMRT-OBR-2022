@@ -129,26 +129,18 @@ public:
     {
         maxVelocity = velocity;
         velocity = 1;
-        int maxSteps = centimeters / (wheelCircunference / 10) * motorResolution;
-        int RightInitialSteps = motorRight->motorSteps;
-        int LeftInitialSteps = motorLeft->motorSteps;
-        int RightSteps = 0;
-        int LeftSteps = 0;
+        int maxStepsRight = motorRight->motorSteps + centimetersToSteps(centimeters);
+        int maxStepsLeft = motorLeft->motorSteps + centimetersToSteps(centimeters);
         stepsCompleteAcceleration = 0;
         int lastStepControl = 0;
-        while (RightSteps < maxSteps && LeftSteps < maxSteps)
+        while (motorRight->motorSteps < maxStepsRight && motorLeft->motorSteps < maxStepsLeft)
         {
             if (_accelTime != 0)
-            {
-                linearAccelerate(&velocity, LeftSteps, maxSteps, _accelTime, &lastStepControl);
-            }
+                linearAccelerate(&velocity, motorRight->motorSteps, maxStepsRight, _accelTime, &lastStepControl);
             else
-            {
                 velocity = maxVelocity;
-            }
+
             this->move(velocity, velocity);
-            RightSteps = motorRight->motorSteps - RightInitialSteps;
-            LeftSteps = motorLeft->motorSteps - LeftInitialSteps;
         }
     }
 
@@ -174,5 +166,11 @@ public:
             this->move(velocity * -turnSide, velocity * turnSide);
             gyro->read();
         }
+    }
+
+    int centimetersToSteps(int centimeters)
+    {
+        float _steps = centimeters / (wheelCircunference / 10) * motorResolution;
+        return _steps;
     }
 };
