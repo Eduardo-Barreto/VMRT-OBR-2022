@@ -28,14 +28,15 @@ private:
     }
 
 public:
+    byte blackThreshold; // Valor mínimo para considerar que o sensor está lendo preto
     int minRead;         // Valor mínimo lido na calibração
     int maxRead;         // Valor máximo lido na calibração
-    byte blackThreshold; // Valor mínimo para considerar que o sensor está lendo preto
-    byte minGreen;       // Valor mínimo do intervalo considerado como verde
-    byte maxGreen;       // Valor máximo do intervalo considerado como verde
+    int minGreen;        // Valor mínimo do intervalo considerado como verde
+    int maxGreen;        // Valor máximo do intervalo considerado como verde
     int raw;             // Valor cru lido do sensor de luz
     byte light;          // Valor tratado de iluminação do sensor de luz (0%~100%)
     bool black;          // Indica se o sensor está lendo preto
+    byte countGreen;     // Flag de controle para verificar se o verde é real
     bool green;          // Indica se o sensor está lendo verde
 
     /**
@@ -60,10 +61,11 @@ public:
      *
      * @param offset: Valor de offset para o intervalo de luz considerado como verde
      */
-    void setGreen(byte offset = 5)
+    void setGreen(byte offset = 1)
     {
         this->read();
-        int interval = map(offset, 0, 100, minRead, maxRead);
+        float interval = (maxRead - minRead);
+        interval = (interval / 100) * offset;
         this->minGreen = raw - interval;
         this->maxGreen = raw + interval;
     }
@@ -76,7 +78,20 @@ public:
         this->raw = analogRead(pin);
         this->light = constrain(map(raw, minRead, maxRead, 100, 0), 0, 100);
         this->black = light >= blackThreshold;
-        this->green = (raw >= minGreen && raw <= maxGreen);
+
+        if (raw >= minGreen && raw <= maxGreen)
+            countGreen++;
+        else
+        {
+            this->green = false;
+            countGreen = 0;
+            return;
+        }
+
+        if (countGreen > 10)
+        {
+            this->green = true;
+        }
     }
 
     /**
