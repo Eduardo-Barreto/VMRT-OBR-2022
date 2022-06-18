@@ -21,24 +21,17 @@ stepperMotor motorLeft(
 
 gyroSensor gyro;
 
-lightSensor s0(61);
-lightSensor s1(62);
-lightSensor s2(63);
-lightSensor s3(64);
-lightSensor s4(65);
-lightSensor s5(66);
-lightSensor s6(67);
-
-lightSensor greenRight(68);
-lightSensor greenLeft(69);
-
 lightSensor lineSensors[7] = {
-    s0,
-    s1,
-    s2,
-    s3,
-    s4,
-    s5,
-    s6};
+    {61},
+    {62},
+    {63},
+    {64},
+    {65},
+    {66},
+    {67}};
+
+lightSensor greenSensors[2] = {
+    {68},
+    {69}};
 
 robotBase robot(&motorRight, &motorLeft, &gyro, 61);
