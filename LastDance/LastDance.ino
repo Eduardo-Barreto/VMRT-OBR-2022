@@ -1,5 +1,5 @@
-#define DEBUG 1
-#define DEBUG_LOG 1
+#define DEBUG 0
+#define DEBUG_LOG 0
 
 #define CALIBRATE_LINE_SENSORS 0
 
@@ -24,7 +24,6 @@ int turnPower = masterPower;
 
 void setup()
 {
-    pinMode(LED_BUILTIN, OUTPUT);
     // Pinos invadidos pelo giroscópio
     pinMode(16, INPUT);
     pinMode(17, INPUT);
@@ -39,23 +38,16 @@ void setup()
     delay(500);
     calibrateLineFollower();
     delay(500);
-#else
-    loadCalibrationSaved();
-
 #endif
+
     delay(1500);
     DebugInit(115200);
 
-    // Botão start improvisado
-    pinMode(38, INPUT_PULLUP);
-    while (digitalRead(38) == 1)
-    {
-        digitalWrite(LED_BUILTIN, !digitalRead(LED_BUILTIN));
-        delay(100);
-    }
-    while (digitalRead(38) == 0)
-    {
-    }
+    startButton.waitForPressAndRelease(
+        []() -> void
+        { builtInLED.blink(); },
+        []() -> void {});
+
 #if CALIBRATE_LINE_SENSORS
     greenSensors[0].setGreen();
     greenSensors[1].setGreen();
@@ -64,6 +56,7 @@ void setup()
     saveCalibration();
 #endif
 
+    loadCalibrationSaved();
     delay(750);
 
     motorLeft.on();
@@ -74,9 +67,6 @@ void debugLoop()
 {
     motorLeft.off();
     motorRight.off();
-
-    printCalibrationSaved();
-    delay(9999999);
 }
 
 void loop()

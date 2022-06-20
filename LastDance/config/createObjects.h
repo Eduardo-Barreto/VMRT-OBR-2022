@@ -1,5 +1,11 @@
 #include "robot.h"
 #include "light.h"
+#include "led.h"
+#include "button.h"
+
+led builtInLED(LED_BUILTIN);
+
+button startButton(38);
 
 stepperMotor motorRight(
     2,    // Step pin
