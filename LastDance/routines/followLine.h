@@ -73,7 +73,25 @@ void alignLine(int force = 50, int _timeout = 750)
     }
 }
 
-bool checkGreen(int turnForce = 90)
+void runLineFollowerGreenSensors()
+{
+    int greenDiff = (greenSensors[1].getLight() - greenSensors[0].getLight());
+
+    if (greenDiff > borderThreshold)
+    {
+        robot.move(targetPower, -targetPower);
+    }
+    else if (greenDiff < -borderThreshold)
+    {
+        robot.move(-targetPower, targetPower);
+    }
+    else
+    {
+        robot.move(targetPower, targetPower);
+    }
+}
+
+bool checkGreen(int turnForce = 80)
 {
     if (rightGreen)
         turnForce = turnForce;
@@ -82,13 +100,12 @@ bool checkGreen(int turnForce = 90)
     else
         return false;
 
-    delay(1000);
+    delay(300);
 
     alignLine();
 
     robot.moveCentimeters(10, 70);
-    robot.turn((turnForce > 0 ? -15 : 15), turnForce);
-    delay(1000);
+    robot.turn((turnForce > 0 ? 15 : -15), turnForce);
 
     while (lineSensors[3].getLight() > blackThreshold)
     {
@@ -98,6 +115,10 @@ bool checkGreen(int turnForce = 90)
     alignLine();
     targetPower = masterPower - 5;
     lastCorrection = millis();
+    greenSensors[0].green = false;
+    greenSensors[0].countGreen = 0;
+    greenSensors[1].green = false;
+    greenSensors[1].countGreen = 0;
     return true;
 }
 
@@ -120,15 +141,17 @@ bool checkTurn(int turnForce = 90)
 
     alignLine();
 
-    int maxStepsRight = motorRight.motorSteps + robot.centimetersToSteps(3);
-    int maxStepsLeft = motorLeft.motorSteps + robot.centimetersToSteps(3);
+    int maxStepsRight = motorRight.motorSteps + robot.centimetersToSteps(4);
+    int maxStepsLeft = motorLeft.motorSteps + robot.centimetersToSteps(4);
+    builtInLED.on();
     while ((motorRight.motorSteps < maxStepsRight) && (motorLeft.motorSteps < maxStepsLeft))
     {
         readColors();
         if (checkGreen())
             return true;
-        robot.move(70, 70);
+        runLineFollowerGreenSensors();
     }
+    builtInLED.off();
 
     alignLine();
 
