@@ -1,5 +1,5 @@
-#define DEBUG 1
-#define DEBUG_LOG 1
+#define DEBUG 0
+#define DEBUG_LOG 0
 
 #define CALIBRATE_LINE_SENSORS 0
 
@@ -13,8 +13,8 @@
 #define DebugLogln(x)
 #endif
 
-int masterPower = 95;
-int maxPower = 80;
+int masterPower = 80;
+int maxPower = 95;
 int targetPower = masterPower + 10;
 int turnPower = masterPower;
 
@@ -67,23 +67,12 @@ void setup()
 
     loadCalibrationSaved();
     delay(750);
+    builtInLED.off();
 }
 
 void debugLoop()
 {
-    /* robot.move(10, 10);
-    while (greenSensors[0].getGreen())
-    {
-        builtInLED.blink(400);
-    }
-
-    while (greenSensors[1].getGreen())
-    {
-        builtInLED.blink(100);
-    } */
-
-    printCalibrationSaved();
-    delay(9999999);
+    runLineFollowerGreenSensors();
 }
 
 void loop()
