@@ -168,6 +168,17 @@ public:
         }
     }
 
+    /**
+     * @brief Converte centímetros para steps
+     *
+     * @param centimeters: centímetros a serem convertidos
+     *
+     * @return int: steps convertidos
+     *
+     * @example
+     *    a = robot.centimetersToSteps(100); // Converte 100 centímetros para steps e armazena na variável A
+     *    // a variável `a` depende da circunferência da roda e da resolução do motor
+     */
     int centimetersToSteps(int centimeters)
     {
         float _steps = centimeters / (wheelCircunference / 10) * motorResolution;
