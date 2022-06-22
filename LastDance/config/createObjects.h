@@ -37,7 +37,7 @@ lightSensor lineSensors[7] = {
     {67}};
 
 lightSensor greenSensors[2] = {
-    {68},
-    {69}};
+    {69},
+    {68}};
 
 robotBase robot(&motorRight, &motorLeft, &gyro, 61);

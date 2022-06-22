@@ -77,7 +77,7 @@ public:
     {
         this->raw = analogRead(pin);
         this->light = constrain(map(raw, minRead, maxRead, 100, 0), 0, 100);
-        this->black = light >= blackThreshold;
+        this->black = light <= blackThreshold;
 
         if (raw >= minGreen && raw <= maxGreen)
             countGreen++;
@@ -89,9 +89,7 @@ public:
         }
 
         if (countGreen > 10)
-        {
             this->green = true;
-        }
     }
 
     /**
@@ -116,6 +114,11 @@ public:
         return this->light;
     }
 
+    /**
+     * @brief Atualiza e retorna se o sensor está lendo verde
+     *
+     * @return bool: Indica se o sensor está lendo verde
+     */
     bool getGreen()
     {
         read();

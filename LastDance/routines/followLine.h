@@ -47,7 +47,6 @@ void readColors()
     borderDiff = borderRightLight - borderLeftLight;
 }
 
-
 void alignLine(int force = 50, int _timeout = 750)
 {
     char diff = (lineSensors[2].getLight() - lineSensors[4].getLight());
@@ -89,13 +88,10 @@ bool checkGreen(int turnForce = 90)
 
     robot.moveCentimeters(10, 70);
     robot.turn((turnForce > 0 ? -15 : 15), turnForce);
+    delay(1000);
 
-    readColors();
-    while (
-        lineSensors[3].getLight() > blackThreshold &&
-        abs(centerDiff) < borderThreshold)
+    while (lineSensors[3].getLight() > blackThreshold)
     {
-        readColors();
         robot.move(turnForce, -turnForce);
     }
 
@@ -128,9 +124,10 @@ bool checkTurn(int turnForce = 90)
     int maxStepsLeft = motorLeft.motorSteps + robot.centimetersToSteps(3);
     while ((motorRight.motorSteps < maxStepsRight) && (motorLeft.motorSteps < maxStepsLeft))
     {
+        readColors();
         if (checkGreen())
             return true;
-        robot.move(60, 60);
+        robot.move(70, 70);
     }
 
     alignLine();
@@ -142,9 +139,7 @@ bool checkTurn(int turnForce = 90)
     robot.moveCentimeters(4, 70);
 
     readColors();
-    while (
-        lineSensors[3].getLight() > blackThreshold &&
-        abs(centerDiff) < borderThreshold)
+    while (lineSensors[3].getLight() > blackThreshold)
     {
         readColors();
         robot.move(turnForce, -turnForce);
@@ -168,8 +163,6 @@ void runLineFollower(bool checkForTurns = true)
         incrementVelocityTime = millis() + 50;
         targetPower++;
     }
-
-    readColors();
 
     unsigned long timeout = millis() + 250;
     while ((centerDiff > borderThreshold) && (millis() < timeout))

@@ -1,5 +1,5 @@
-#define DEBUG 0
-#define DEBUG_LOG 0
+#define DEBUG 1
+#define DEBUG_LOG 1
 
 #define CALIBRATE_LINE_SENSORS 0
 
@@ -32,12 +32,6 @@ void setup()
     gyro.init();
 
 #if CALIBRATE_LINE_SENSORS == 1
-    motorLeft.on();
-    motorRight.on();
-    calibrateLineFollower();
-    delay(500);
-    calibrateLineFollower();
-    delay(500);
 #endif
 
     delay(1500);
@@ -45,10 +39,25 @@ void setup()
 
     startButton.waitForPressAndRelease(
         []() -> void
-        { builtInLED.blink(); },
-        []() -> void {});
+        { builtInLED.blink(200); },
+        []() -> void
+        { builtInLED.blink(100); });
 
-#if CALIBRATE_LINE_SENSORS
+    motorLeft.on();
+    motorRight.on();
+
+#if CALIBRATE_LINE_SENSORS == 1
+    calibrateLineFollower();
+    delay(500);
+    calibrateLineFollower();
+    delay(500);
+
+    startButton.waitForPressAndRelease(
+        []() -> void
+        { builtInLED.blink(200); },
+        []() -> void
+        { builtInLED.blink(100); });
+
     greenSensors[0].setGreen();
     greenSensors[1].setGreen();
     delay(150);
@@ -58,15 +67,23 @@ void setup()
 
     loadCalibrationSaved();
     delay(750);
-
-    motorLeft.on();
-    motorRight.on();
 }
 
 void debugLoop()
 {
-    motorLeft.off();
-    motorRight.off();
+    /* robot.move(10, 10);
+    while (greenSensors[0].getGreen())
+    {
+        builtInLED.blink(400);
+    }
+
+    while (greenSensors[1].getGreen())
+    {
+        builtInLED.blink(100);
+    } */
+
+    printCalibrationSaved();
+    delay(9999999);
 }
 
 void loop()
