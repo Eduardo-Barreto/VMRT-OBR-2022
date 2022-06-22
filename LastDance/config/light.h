@@ -61,7 +61,7 @@ public:
      *
      * @param offset: Valor de offset para o intervalo de luz considerado como verde
      */
-    void setGreen(byte offset = 1)
+    void setGreen(float offset = 1)
     {
         this->read();
         float interval = (maxRead - minRead);
