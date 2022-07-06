@@ -96,6 +96,20 @@ public:
     }
 
     /**
+     * @brief Para os motores durante o tempo desejado
+     * @param time: tempo para parar os motores (em milissegundos)
+     *
+     * @example
+     *    robot.stop(1000); // Para os motores durante 1 segundo
+     */
+    void stop(int time = 0)
+    {
+        move(0, 0);
+        if (time > 0)
+            delay(time);
+    }
+
+    /**
      * @brief Move os motores do robô durante o tempo desejado com a velocidade desejada
      * @param velocityRight: velocidade do motor direito
      * @param velocityLeft: velocidade do motor esquerdo
