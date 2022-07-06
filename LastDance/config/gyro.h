@@ -38,6 +38,12 @@ public:
      */
     void init()
     {
+        // Pinos invadidos pelo giroscópio
+        pinMode(16, INPUT);
+        pinMode(17, INPUT);
+        pinMode(18, INPUT);
+        pinMode(19, INPUT);
+
         Wire.begin();
         Wire.setClock(400000);
 
