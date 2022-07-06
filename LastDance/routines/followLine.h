@@ -1,5 +1,5 @@
 int borderThreshold = 80; // Valor mínimo para considerar que o sensor está diferente do seu oposto (direita-esquerda)
-int blackThreshold = 35;  // Valor máximo para considerar que o sensor está lendo preto
+int blackThreshold = 20;  // Valor máximo para considerar que o sensor está lendo preto
 
 byte centerRightLight; // Valor lido do sensor de luz do meio da direita
 byte centerLeftLight;  // Valor lido do sensor de luz do meio da esquerda
@@ -129,12 +129,15 @@ bool checkGreen(int turnForce = 80)
  */
 bool checkTurn(int turnForce = 90)
 {
-    if (checkGreen())
-        return true;
+    // if (checkGreen())
+    //  return true;
 
-    if (borderDiff >= borderThreshold) // direita
+    if ((borderRightLight < blackThreshold) && (borderLeftLight < blackThreshold))
+        return;
+
+    if (borderRightLight < blackThreshold)
         turnForce = turnForce;
-    else if (borderDiff <= -borderThreshold) // esquerda
+    else if (borderLeftLight < blackThreshold)
         turnForce = -turnForce;
     else
         return false;
@@ -165,7 +168,7 @@ bool checkTurn(int turnForce = 90)
     while (lineSensors[3].getLight() > blackThreshold)
     {
         readColors();
-        robot.move(turnForce, -turnForce);
+        robot.move(-turnForce, turnForce);
     }
 
     alignLine();
@@ -187,26 +190,27 @@ void runLineFollower(bool checkForTurns = true)
         targetPower++;
     }
 
-    unsigned long timeout = millis() + 250;
-    while ((centerDiff > borderThreshold) && (millis() < timeout))
+    if (centerLeftLight < blackThreshold)
     {
-        readColors();
-        if (checkForTurns && checkTurn())
-            return;
-
-        robot.move(targetPower, -targetPower);
+        robot.moveTime(80, -80, 50);
         lastCorrection = millis();
         targetPower = masterPower;
     }
-
-    timeout = millis() + 250;
-    while ((centerDiff < -borderThreshold) && (millis() < timeout))
+    if (centerRightLight < blackThreshold)
     {
-        readColors();
-        if (checkForTurns && checkTurn())
-            return;
-
-        robot.move(-targetPower, targetPower);
+        robot.moveTime(-80, 80, 50);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+    if (leftLight < blackThreshold)
+    {
+        robot.moveTime(80, -80, 60);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+    if (rightLight < blackThreshold)
+    {
+        robot.moveTime(-80, 80, 60);
         lastCorrection = millis();
         targetPower = masterPower;
     }
@@ -217,7 +221,7 @@ void runLineFollower(bool checkForTurns = true)
 void runFloor()
 {
     readColors();
-    checkGreen();
+    // checkGreen();
     checkTurn();
     runLineFollower();
 }

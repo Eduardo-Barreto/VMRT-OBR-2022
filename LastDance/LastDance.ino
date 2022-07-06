@@ -1,7 +1,7 @@
-#define DEBUG 0
-#define DEBUG_LOG 0
+#define DEBUG 1
+#define DEBUG_LOG 1
 
-#define CALIBRATE_LINE_SENSORS 0
+#define CALIBRATE_LINE_SENSORS 1
 
 #if DEBUG_LOG == 1
 #define DebugInit(x) Serial.begin(x)
@@ -24,17 +24,8 @@ int turnPower = masterPower;
 
 void setup()
 {
-    // Pinos invadidos pelo giroscópio
-    pinMode(16, INPUT);
-    pinMode(17, INPUT);
-    pinMode(18, INPUT);
-    pinMode(19, INPUT);
     gyro.init();
 
-#if CALIBRATE_LINE_SENSORS == 1
-#endif
-
-    delay(1500);
     DebugInit(115200);
 
     startButton.waitForPressAndRelease(
@@ -48,7 +39,7 @@ void setup()
 
 #if CALIBRATE_LINE_SENSORS == 1
     calibrateLineFollower();
-    delay(500);
+    startButton.waitForPressAndRelease();
     calibrateLineFollower();
     delay(500);
 
@@ -70,9 +61,17 @@ void setup()
     builtInLED.off();
 }
 
+int counter = 0;
 void debugLoop()
 {
-    runLineFollowerGreenSensors();
+    robot.move(targetPower, targetPower);
+    if(greenSensors[0].getGreen()){
+        counter++;
+    }
+    if(greenSensors[1].getLight() < 15){
+        DebugLogln(counter);
+        robot.stop(9999999);
+    }
 }
 
 void loop()
