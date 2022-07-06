@@ -5,7 +5,7 @@
 
 led builtInLED(LED_BUILTIN);
 
-button startButton(38);
+button startButton(14);
 
 stepperMotor motorRight(
     2,    // Step pin
