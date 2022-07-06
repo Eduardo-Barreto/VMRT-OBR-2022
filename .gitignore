@@ -1,3 +1,5 @@
 .vscode/
 Build/
 bkp/
+.env
+compile.py
