@@ -120,7 +120,7 @@ public:
      *        // Ação a ser executada enquanto o botão estiver pressionado
      *    });
      */
-    void waitForPress(void (*doWhileWait)())
+    void waitForPress(void (*doWhileWait)() = ([]() -> void {}))
     {
         while (!isPressed())
         {
@@ -144,7 +144,7 @@ public:
      *          }
      *      );
      */
-    void waitForPressAndRelease(void (*doBeforePress)(), void (*doBeforeRelease)())
+    void waitForPressAndRelease(void (*doBeforePress)() = ([]() -> void {}), void (*doBeforeRelease)() = ([]() -> void {}))
     {
         while (!isPressed())
         {
