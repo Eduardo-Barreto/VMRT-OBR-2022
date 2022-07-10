@@ -85,6 +85,8 @@ public:
 
         // Calcula o tempo entre steps de acordo com a velocidade desejada
         unsigned long stepTime = map(velocity, 0, 100, minimumVelocity, maximumVelocity);
+        if (velocity == 0)
+            stepTime = __LONG_MAX__;
 
         // Verifica se o motor pode mover
         if (micros() > (lastStep + stepTime))
