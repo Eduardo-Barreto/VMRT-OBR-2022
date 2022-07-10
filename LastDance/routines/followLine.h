@@ -28,20 +28,35 @@ void readAllLightSensors()
     }
 }
 
+void printAllLightSensors()
+{
+    for (byte i = 0; i < 7; i++)
+    {
+        DebugLog(lineSensors[i].getLight());
+        DebugLog("\t");
+    }
+    for (byte j = 0; j < 2; j++)
+    {
+        DebugLog(greenSensors[j].getLight());
+        DebugLog("\t");
+    }
+    DebugLogln();
+}
+
 /**
  * @brief Atualiza os valores lido dos sensores de luz e as variáveis de controle
  */
 void readColors()
 {
-    borderRightLight = lineSensors[0].getLight();
-    rightLight = lineSensors[1].getLight();
-    centerRightLight = lineSensors[2].getLight();
-    centerLeftLight = lineSensors[4].getLight();
-    leftLight = lineSensors[5].getLight();
-    borderLeftLight = lineSensors[6].getLight();
+    borderLeftLight = lineSensors[0].getLight();
+    leftLight = lineSensors[1].getLight();
+    centerLeftLight = lineSensors[2].getLight();
+    centerRightLight = lineSensors[4].getLight();
+    rightLight = lineSensors[5].getLight();
+    borderRightLight = lineSensors[6].getLight();
 
-    rightGreen = greenSensors[0].getGreen();
-    leftGreen = greenSensors[1].getGreen();
+    rightGreen = greenSensors[1].getGreen();
+    leftGreen = greenSensors[0].getGreen();
 
     centerDiff = (centerRightLight + rightLight * 1.15) - (centerLeftLight + leftLight * 1.15);
     borderDiff = borderRightLight - borderLeftLight;
@@ -59,7 +74,7 @@ void alignLine(int force = 50, int _timeout = 750)
             break;
 
         diff = (lineSensors[2].getLight() - lineSensors[4].getLight());
-        robot.move(force, -force);
+        robot.move(-force, force);
     }
 
     timeout = millis() + _timeout;
@@ -69,21 +84,21 @@ void alignLine(int force = 50, int _timeout = 750)
             break;
 
         diff = (lineSensors[2].getLight() - lineSensors[4].getLight());
-        robot.move(-force, force);
+        robot.move(force, -force);
     }
 }
 
 void runLineFollowerGreenSensors()
 {
-    int greenDiff = (greenSensors[1].getLight() - greenSensors[0].getLight());
+    int greenDiff = (greenSensors[0].getLight() - greenSensors[1].getLight());
 
     if (greenDiff > borderThreshold)
     {
-        robot.move(targetPower, -targetPower);
+        robot.move(-targetPower, targetPower);
     }
     else if (greenDiff < -borderThreshold)
     {
-        robot.move(-targetPower, targetPower);
+        robot.move(targetPower, -targetPower);
     }
     else
     {
@@ -109,7 +124,7 @@ bool checkGreen(int turnForce = 80)
 
     while (lineSensors[3].getLight() > blackThreshold)
     {
-        robot.move(turnForce, -turnForce);
+        robot.move(-turnForce, turnForce);
     }
 
     alignLine();
@@ -144,24 +159,10 @@ bool checkTurn(int turnForce = 90)
 
     alignLine();
 
-    int maxStepsRight = motorRight.motorSteps + robot.centimetersToSteps(4);
-    int maxStepsLeft = motorLeft.motorSteps + robot.centimetersToSteps(4);
-    builtInLED.on();
-    while ((motorRight.motorSteps < maxStepsRight) && (motorLeft.motorSteps < maxStepsLeft))
-    {
-        readColors();
-        if (checkGreen())
-            return true;
-        runLineFollowerGreenSensors();
-    }
-    builtInLED.off();
-
-    alignLine();
-
     if (checkGreen())
         return true;
 
-    robot.turn((turnForce > 0 ? -5 : 5), 60);
+    robot.turn((turnForce > 0 ? 5 : -5), 60);
     robot.moveCentimeters(4, 70);
 
     readColors();

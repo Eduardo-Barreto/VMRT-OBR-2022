@@ -78,7 +78,7 @@ public:
         this->raw = analogRead(pin);
         this->light = constrain(map(raw, minRead, maxRead, 100, 0), 0, 100);
         this->black = light <= blackThreshold;
-        this->green = (light >= minGreen && light <= maxGreen);
+        this->green = (raw >= minGreen && raw <= maxGreen);
 
         /* if (raw >= minGreen && raw <= maxGreen)
             countGreen++;

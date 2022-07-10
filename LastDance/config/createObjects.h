@@ -5,11 +5,11 @@
 
 led builtInLED(LED_BUILTIN);
 
-button startButton(14);
+button startButton(52);
 
 stepperMotor motorRight(
-    2,    // Step pin
-    5,    // Direction pin
+    4,    // Step pin
+    7,    // Direction pin
     8,    // Enable pin
     400,  // Resolution
     7000, // Minimum velocity
@@ -17,8 +17,8 @@ stepperMotor motorRight(
 );
 
 stepperMotor motorLeft(
-    4,    // Step pin
-    7,    // Direction pin
+    2,    // Step pin
+    5,    // Direction pin
     8,    // Enable pin
     400,  // Resolution
     7000, // Minimum velocity
@@ -37,7 +37,7 @@ lightSensor lineSensors[7] = {
     {67}};
 
 lightSensor greenSensors[2] = {
-    {69},
-    {68}};
+    {68},
+    {69}};
 
 robotBase robot(&motorRight, &motorLeft, &gyro, 61);

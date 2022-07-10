@@ -109,6 +109,18 @@ public:
             delay(time);
     }
 
+    void turnOnMotors()
+    {
+        motorRight->on();
+        motorLeft->on();
+    }
+
+    void turnOffMotors()
+    {
+        motorRight->off();
+        motorLeft->off();
+    }
+
     /**
      * @brief Move os motores do robô durante o tempo desejado com a velocidade desejada
      * @param velocityRight: velocidade do motor direito
@@ -169,7 +181,7 @@ public:
      */
     void turn(int degrees, float velocity)
     {
-        char turnSide = degrees < 0 ? 1 : -1;
+        char turnSide = degrees < 0 ? -1 : 1;
         velocity = min(velocity, 85);
 
         gyro->read();

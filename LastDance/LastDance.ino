@@ -1,7 +1,7 @@
 #define DEBUG 1
 #define DEBUG_LOG 1
 
-#define CALIBRATE_LINE_SENSORS 1
+#define CALIBRATE_LINE_SENSORS 0
 
 #if DEBUG_LOG == 1
 #define DebugInit(x) Serial.begin(x)
@@ -62,16 +62,24 @@ void setup()
 }
 
 int counter = 0;
+unsigned long startTime = millis();
+unsigned long elapsedTime = 0;
 void debugLoop()
 {
-    robot.move(targetPower, targetPower);
-    if(greenSensors[0].getGreen()){
-        counter++;
+    while (lineSensors[0].getLight() > 20)
+    {
+        robot.move(targetPower, targetPower);
     }
-    if(greenSensors[1].getLight() < 15){
-        DebugLogln(counter);
-        robot.stop(9999999);
-    }
+    robot.stop(500);
+    robot.turnOffMotors();
+    startButton.waitForPressAndRelease(
+        []() -> void
+        {
+            DebugLog(greenSensors[0].getGreen());
+            DebugLog("\t");
+            DebugLogln(lineSensors[0].getLight() < 20);
+        });
+    robot.turnOnMotors();
 }
 
 void loop()
