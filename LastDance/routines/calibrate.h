@@ -126,6 +126,8 @@ void printCalibrationSaved()
         address += sizeof(calibrationRead);
     }
 
+    DebugLogln();
+
     for (byte i = 0; i < 2; i++)
     {
         EEPROM.get(address, calibrationRead);
@@ -137,7 +139,9 @@ void printCalibrationSaved()
         DebugLog(" ~ ");
         DebugLogln(calibrationRead.maxRead);
 
-        DebugLog("Valor verde: ");
+        DebugLog("\tValor verde ");
+        DebugLog(i);
+        DebugLog(": ");
         DebugLog(calibrationRead.minGreen);
         DebugLog(" ~ ");
         DebugLogln(calibrationRead.maxGreen);
