@@ -1,9 +1,9 @@
 # Digitais
 ## Motores
-- stepRight 2
-- stepLeft 4
-- directionRight 5
-- directionLeft 7
+- stepRight 4
+- stepLeft 2
+- directionRight 7
+- directionLeft 5
 - motorEnable 8
 ### Servos
 - pinServe0 4
@@ -25,19 +25,18 @@
 - status2Led 28
 - status3Led 29
 
+## Botões
+- startButton 52
+
 ## Gyro
 - SDA 20
 - SCL 21
 
 ---
 # Analógicas
-## Sharp
-- pinFrontSharp A3
 
-## Bateria
-- pinBattery A4
-
-## Luz
+## Sensores
+### Luz
 - pinLight0 A7
 - pinLight1 A8
 - pinLight2 A9
