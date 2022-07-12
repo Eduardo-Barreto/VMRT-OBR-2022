@@ -28,19 +28,22 @@ void readAllLightSensors()
     }
 }
 
-void printAllLightSensors()
+void printAllLightSensors(bool ignoreGreen = false)
 {
     for (byte i = 0; i < 7; i++)
     {
         DebugLog(lineSensors[i].getLight());
         DebugLog("\t");
     }
+
+    if (ignoreGreen)
+        return;
+
     for (byte j = 0; j < 2; j++)
     {
         DebugLog(greenSensors[j].getLight());
         DebugLog("\t");
     }
-    DebugLogln();
 }
 
 /**
@@ -55,8 +58,8 @@ void readColors()
     rightLight = lineSensors[5].getLight();
     borderRightLight = lineSensors[6].getLight();
 
-    rightGreen = greenSensors[1].getGreen();
     leftGreen = greenSensors[0].getGreen();
+    rightGreen = greenSensors[1].getGreen();
 
     centerDiff = (centerRightLight + rightLight * 1.15) - (centerLeftLight + leftLight * 1.15);
     borderDiff = borderRightLight - borderLeftLight;
@@ -117,10 +120,9 @@ bool checkGreen(int turnForce = 80)
 
     delay(300);
 
-    alignLine();
-
-    robot.moveCentimeters(10, 70);
-    robot.turn((turnForce > 0 ? 15 : -15), turnForce);
+    robot.moveCentimeters(7, 50);
+    delay(150);
+    robot.turn(((turnForce > 0) ? (15) : (-15)), 60);
 
     while (lineSensors[3].getLight() > blackThreshold)
     {
@@ -148,7 +150,10 @@ bool checkTurn(int turnForce = 90)
     //  return true;
 
     if ((borderRightLight < blackThreshold) && (borderLeftLight < blackThreshold))
-        return;
+    {
+        robot.moveCentimeters(3, targetPower);
+        return false;
+    }
 
     if (borderRightLight < blackThreshold)
         turnForce = turnForce;
@@ -157,18 +162,20 @@ bool checkTurn(int turnForce = 90)
     else
         return false;
 
-    alignLine();
+    robot.stop(100);
+    while ((lineSensors[0].getLight() > 20) && (lineSensors[6].getLight() > 20))
+        robot.move(-15, -15);
+    robot.stop(500);
 
     if (checkGreen())
         return true;
 
-    robot.turn((turnForce > 0 ? 5 : -5), 60);
+    robot.turn((turnForce < 0 ? 5 : -5), 60);
     robot.moveCentimeters(4, 70);
 
     readColors();
     while (lineSensors[3].getLight() > blackThreshold)
     {
-        readColors();
         robot.move(-turnForce, turnForce);
     }
 
@@ -183,7 +190,7 @@ bool checkTurn(int turnForce = 90)
  *
  * @param checkForTurns: Se deve verificar por curvas ou somente seguir a linha
  */
-void runLineFollower(bool checkForTurns = true)
+void runLineFollower()
 {
     if (targetPower < maxPower && millis() > incrementVelocityTime)
     {
@@ -191,32 +198,47 @@ void runLineFollower(bool checkForTurns = true)
         targetPower++;
     }
 
-    if (centerLeftLight < blackThreshold)
+    unsigned long timeout = millis() + 50;
+    while ((centerLeftLight < blackThreshold) && millis() < timeout)
     {
-        robot.moveTime(80, -80, 50);
-        lastCorrection = millis();
-        targetPower = masterPower;
-    }
-    if (centerRightLight < blackThreshold)
-    {
-        robot.moveTime(-80, 80, 50);
-        lastCorrection = millis();
-        targetPower = masterPower;
-    }
-    if (leftLight < blackThreshold)
-    {
-        robot.moveTime(80, -80, 60);
-        lastCorrection = millis();
-        targetPower = masterPower;
-    }
-    if (rightLight < blackThreshold)
-    {
-        robot.moveTime(-80, 80, 60);
+        readColors();
+        checkTurn();
+        robot.move(80, -80);
         lastCorrection = millis();
         targetPower = masterPower;
     }
 
-    robot.move(targetPower, targetPower);
+    timeout = millis() + 50;
+    while ((centerRightLight < blackThreshold) && millis() < timeout)
+    {
+        readColors();
+        checkTurn();
+        robot.move(-80, 80);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+
+    timeout = millis() + 60;
+    while ((leftLight < blackThreshold) && millis() < timeout)
+    {
+        readColors();
+        checkTurn();
+        robot.move(80, -80);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+
+    timeout = millis() + 60;
+    while ((rightLight < blackThreshold) && millis() < timeout)
+    {
+        readColors();
+        checkTurn();
+        robot.move(-80, 80);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+
+    robot.moveTime(targetPower, targetPower, 15);
 }
 
 void runFloor()

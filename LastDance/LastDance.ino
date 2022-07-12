@@ -1,5 +1,5 @@
-#define DEBUG 1
-#define DEBUG_LOG 1
+#define DEBUG 0
+#define DEBUG_LOG 0
 
 #define CALIBRATE_LINE_SENSORS 0
 
@@ -66,18 +66,25 @@ unsigned long startTime = millis();
 unsigned long elapsedTime = 0;
 void debugLoop()
 {
-    while (lineSensors[0].getLight() > 20)
-    {
+    while (lineSensors[6].getLight() > 20)
         robot.move(targetPower, targetPower);
-    }
+    robot.stop(100);
+    while (lineSensors[6].getLight() > 20)
+        robot.move(-15, -15);
     robot.stop(500);
     robot.turnOffMotors();
     startButton.waitForPressAndRelease(
         []() -> void
         {
-            DebugLog(greenSensors[0].getGreen());
+            DebugLog(lineSensors[6].getLight() < 20);
             DebugLog("\t");
-            DebugLogln(lineSensors[0].getLight() < 20);
+            DebugLog(greenSensors[1].minGreen);
+            DebugLog(" < ");
+            DebugLog(greenSensors[1].getRawRead());
+            DebugLog(" > ");
+            DebugLog(greenSensors[1].maxGreen);
+            DebugLog(" = ");
+            DebugLogln(greenSensors[1].getGreen());
         });
     robot.turnOnMotors();
 }
