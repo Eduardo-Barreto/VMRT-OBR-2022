@@ -140,6 +140,7 @@ public:
         {
             this->move(velocityRight, velocityLeft);
         }
+        this->stop();
     }
 
     /**
@@ -168,6 +169,7 @@ public:
 
             this->move(velocity, velocity);
         }
+        this->stop();
     }
 
     /**
@@ -182,7 +184,7 @@ public:
     void turn(int degrees, float velocity)
     {
         char turnSide = degrees < 0 ? -1 : 1;
-        velocity = min(velocity, 85);
+        velocity = min(abs(velocity), 85);
 
         gyro->read();
         int targetAngle = convertDegrees((gyro->Yaw + degrees));
@@ -192,6 +194,7 @@ public:
             this->move(velocity * -turnSide, velocity * turnSide);
             gyro->read();
         }
+        this->stop();
     }
 
     /**
