@@ -6,8 +6,8 @@
 - directionLeft 5
 - motorEnable 8
 ### Servos
-- pinServe0 4
-- pinServe1 7
+- pinServe0 12
+- pinServe1 11
 
 ## Ultrassônicos
 - rightUltraEcho 9
@@ -37,14 +37,14 @@
 
 ## Sensores
 ### Luz
-- pinLight0 A7
-- pinLight1 A8
-- pinLight2 A9
-- pinLight3 A10
-- pinLight4 A11
-- pinLight5 A12
-- pinLight6 A13
+- borderLeftLight A7
+- leftLight A8
+- centerLeftLight A9
+- centerLight A10
+- centerRightLight A11
+- rightLight A12
+- borderRightLight A13
 
 ### Verde
-- pinGreen0 A14
-- pinGreen1 A15
+- leftGreen A14
+- rightGreen A15
