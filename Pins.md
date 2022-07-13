@@ -26,7 +26,10 @@
 - status3Led 29
 
 ## Botões
-- startButton 52
+- F1 53
+- F2 51
+- F3 49
+- startButton 47
 
 ## Gyro
 - SDA 20
