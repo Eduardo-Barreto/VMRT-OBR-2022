@@ -6,14 +6,17 @@
 - directionLeft 5
 - motorEnable 8
 ### Servos
-- pinServe0 12
-- pinServe1 11
+- catcher 12
+- catcherBlocker 1
 
 ## Ultrassônicos
 - rightUltraEcho 9
 - leftUltraEcho 10
+- centerUltraEcho 11
 - rightUltraTrigger 30
 - leftUltraTrigger 31
+- centerUltraTrigger 32
+
 
 ## Leds
 - leftTurnLed 22
@@ -29,7 +32,7 @@
 - F1 53
 - F2 51
 - F3 49
-- startButton 47
+- startButton 3
 
 ## Gyro
 - SDA 20
