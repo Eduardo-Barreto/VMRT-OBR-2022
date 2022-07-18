@@ -8,7 +8,6 @@
 class button
 {
 private:
-    byte pin;                   // Pino do botão
     byte debounceTime;          // Tempo de debounce (falha mecânica)
     unsigned long nextReadTime; // Próxima leitura do botão (ignorando bounce)
     bool _hasChanged;           // Indica se o botão foi alterado
@@ -20,6 +19,7 @@ private:
     }
 
 public:
+    byte pin;   // Pino do botão
     bool state; // Indica se o botão está pressionado ou não (false = pressionado)
 
     /**
@@ -28,7 +28,7 @@ public:
      * @param pin: (byte) Pino do botão
      * @param debounceTime: (byte) Tempo de debounce (falha mecânica)
      */
-    button(byte _pin, byte _debounceTime = 100)
+    button(byte _pin, byte _debounceTime = 10)
     {
         this->pin = _pin;
         this->debounceTime = _debounceTime;
