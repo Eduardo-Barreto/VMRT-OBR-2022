@@ -3,8 +3,12 @@
 #include "led.h"
 #include "button.h"
 #include "servo.h"
+#include "ultra.h"
 
 led builtInLED(LED_BUILTIN);
+led rightTurnLED(27);
+led greenLED(25);
+led leftTurnLED(23);
 
 button startButton(3);
 button F1(53);
@@ -46,5 +50,7 @@ lightSensor greenSensors[2] = {
 
 robotBase robot(&motorRight, &motorLeft, &gyro, 61);
 
-Servo catcher(12);
-Servo catcherBlocker(1);
+Servo catcher(12, 90);
+Servo catcherBlocker(6, 90);
+
+Ultrasonic centerUltra(32, 11);
