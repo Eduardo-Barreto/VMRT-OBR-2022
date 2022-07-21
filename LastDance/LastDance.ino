@@ -1,5 +1,5 @@
 #define DEBUG 0
-#define DEBUG_LOG 1
+#define DEBUG_LOG 0
 
 #define CALIBRATE_LINE_SENSORS 0
 
@@ -28,11 +28,19 @@ int turnPower = masterPower;
 void setup()
 {
     wdt_disable();
+    rightTurnLED.on();
+    greenLED.on();
+    leftTurnLED.on();
     gyro.init();
 
     DebugInit(115200);
 
-    startButton.waitForRelease();
+    startButton.waitForRelease([]() -> void
+                               {
+            builtInLED.blink(200);
+            rightTurnLED.blink(200);
+            greenLED.blink(200);
+            leftTurnLED.blink(200); });
 
     startButton.waitForPressAndRelease(
         []() -> void
@@ -90,13 +98,19 @@ void setup()
 #endif
 
     loadCalibrationSaved();
-    delay(750);
+    layCatcher();
     builtInLED.off();
     rightTurnLED.off();
     greenLED.off();
     leftTurnLED.off();
+    layCatcher();
+    delay(300);
 
     attachInterrupt(digitalPinToInterrupt(startButton.pin), interruptMenu, LOW);
+    /*
+    greenSensors[0].forceGreen(3);
+    greenSensors[1].forceGreen(3);
+    */
 }
 
 int angle = 0;

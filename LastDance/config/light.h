@@ -70,6 +70,15 @@ public:
         this->maxGreen = raw + interval;
     }
 
+    void forceGreen(float offset = 5)
+    {
+        float interval = (maxRead - minRead);
+        interval = (interval / 100) * offset;
+        float raw = minGreen + ((maxGreen - minGreen) / 2);
+        this->minGreen = raw - (interval * 1.5f);
+        this->maxGreen = raw + interval;
+    }
+
     /**
      * @brief Atualiza o valor lido do sensor de luz
      */
