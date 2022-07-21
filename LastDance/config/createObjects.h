@@ -14,6 +14,7 @@ button startButton(3);
 button F1(53);
 button F2(51);
 button F3(49);
+button bumper(52);
 
 stepperMotor motorRight(
     4,    // Step pin
