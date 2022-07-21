@@ -1,5 +1,5 @@
 #define DEBUG 0
-#define DEBUG_LOG 0
+#define DEBUG_LOG 1
 
 #define CALIBRATE_LINE_SENSORS 0
 
@@ -18,75 +18,93 @@ int maxPower = 95;
 int targetPower = masterPower + 10;
 int turnPower = masterPower;
 
+#include <avr/wdt.h>
 #include "config/createObjects.h"
 #include "routines/followLine.h"
 #include "routines/calibrate.h"
+#include "routines/catcher.h"
+#include "routines/interruptMode.h"
 
 void setup()
 {
+    wdt_disable();
     gyro.init();
 
     DebugInit(115200);
 
+    startButton.waitForRelease();
+
     startButton.waitForPressAndRelease(
         []() -> void
-        { builtInLED.blink(200); },
+        {
+            builtInLED.blink(200);
+            rightTurnLED.blink(200);
+            greenLED.blink(200);
+            leftTurnLED.blink(200);
+        },
         []() -> void
-        { builtInLED.blink(100); });
+        {
+            builtInLED.blink(100);
+            rightTurnLED.blink(100);
+            greenLED.blink(100);
+            leftTurnLED.blink(100);
+        });
 
     motorLeft.on();
     motorRight.on();
 
 #if CALIBRATE_LINE_SENSORS == 1
+    greenLED.off();
+    rightTurnLED.on();
+    leftTurnLED.on();
     calibrateLineFollower();
-    startButton.waitForPressAndRelease();
+    startButton.waitForPressAndRelease(
+        []() -> void
+        {
+            builtInLED.blink(200);
+            rightTurnLED.blink(200);
+            leftTurnLED.blink(200);
+        },
+        []() -> void
+        {
+            builtInLED.blink(100);
+            rightTurnLED.blink(100);
+            leftTurnLED.blink(100);
+        });
     calibrateLineFollower();
+    rightTurnLED.off();
+    leftTurnLED.off();
     delay(500);
 
     startButton.waitForPressAndRelease(
         []() -> void
-        { builtInLED.blink(200); },
+        { greenLED.blink(200); },
         []() -> void
-        { builtInLED.blink(100); });
+        { greenLED.blink(100); });
 
+    greenLED.on();
     greenSensors[0].setGreen();
     greenSensors[1].setGreen();
     delay(150);
-
     saveCalibration();
 #endif
 
     loadCalibrationSaved();
     delay(750);
     builtInLED.off();
+    rightTurnLED.off();
+    greenLED.off();
+    leftTurnLED.off();
+
+    attachInterrupt(digitalPinToInterrupt(startButton.pin), interruptMenu, LOW);
 }
 
-int counter = 0;
-unsigned long startTime = millis();
-unsigned long elapsedTime = 0;
+int angle = 0;
 void debugLoop()
 {
-    while (lineSensors[6].getLight() > 20)
-        robot.move(targetPower, targetPower);
-    robot.stop(100);
-    while (lineSensors[6].getLight() > 20)
-        robot.move(-15, -15);
-    robot.stop(500);
     robot.turnOffMotors();
-    startButton.waitForPressAndRelease(
-        []() -> void
-        {
-            DebugLog(lineSensors[6].getLight() < 20);
-            DebugLog("\t");
-            DebugLog(greenSensors[1].minGreen);
-            DebugLog(" < ");
-            DebugLog(greenSensors[1].getRawRead());
-            DebugLog(" > ");
-            DebugLog(greenSensors[1].maxGreen);
-            DebugLog(" = ");
-            DebugLogln(greenSensors[1].getGreen());
-        });
-    robot.turnOnMotors();
+
+    DebugLogln(centerUltra.read());
 }
 
 void loop()
