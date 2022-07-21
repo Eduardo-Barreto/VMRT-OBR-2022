@@ -131,8 +131,42 @@ void runLineFollowerGreenSensors()
     }
 }
 
+bool checkDeadEnd(int turnForce = 80)
+{
+    if (rightGreen && leftGreen)
+    {
+        rightTurnLED.on();
+        greenLED.on();
+        leftTurnLED.on();
+
+        robot.stop();
+
+        robot.moveCentimeters(7, 50);
+
+        robot.turn(135, 50);
+
+        while (lineSensors[3].getLight() > blackThreshold + 10)
+        {
+            robot.move(-turnForce, turnForce);
+        }
+
+        alignLine();
+        targetPower = masterPower - 5;
+        lastCorrection = millis();
+        greenSensors[0].green = false;
+        greenSensors[1].green = false;
+        rightTurnLED.off();
+        greenLED.off();
+        leftTurnLED.off();
+        return true;
+    }
+}
+
 bool checkGreen(int turnForce = 80)
 {
+    if (checkDeadEnd())
+        return true;
+
     if (rightGreen)
     {
         turnForce = turnForce;
@@ -150,10 +184,13 @@ bool checkGreen(int turnForce = 80)
     else
         return false;
 
+    if (checkDeadEnd())
+        return true;
+
     delay(300);
     robot.moveCentimeters(7, 50);
-    delay(150);
-    robot.turn(((turnForce > 0) ? (15) : (-15)), 60);
+    delay(200);
+    robot.turn(((turnForce > 0) ? (30) : (-30)), 60);
 
     while (lineSensors[3].getLight() > blackThreshold + 10)
     {
@@ -196,10 +233,34 @@ bool checkTurn(int turnForce = 90)
         return true;
 
     robot.stop(100);
-    while ((lineSensors[0].getLight() > 20) && (lineSensors[6].getLight() > 20))
+    unsigned long timeout = millis() + 300;
+    while (((lineSensors[0].getLight() > 20) && (lineSensors[6].getLight() > 20)) && millis() < timeout)
         robot.move(-15, -15);
-    robot.stop();
+    robot.stop(10);
 
+    if (turnForce > 0)
+    {
+        unsigned long timeout = millis() + 300;
+        while (((lineSensors[5].getLight() > blackThreshold + 10) || (lineSensors[1].getLight() > blackThreshold + 10)) && millis() < timeout)
+        {
+            robot.move(15, 0);
+        }
+    }
+    else
+    {
+        unsigned long timeout = millis() + 300;
+        while (((lineSensors[1].getLight() > blackThreshold + 10) || (lineSensors[5].getLight() > blackThreshold + 10)) && millis() < timeout)
+        {
+            robot.move(0, 15);
+        }
+    }
+
+    robot.stop(10);
+    timeout = millis() + 300;
+    while (((lineSensors[0].getLight() > 20) && (lineSensors[6].getLight() > 20)) && millis() < timeout)
+        robot.move(-15, -15);
+
+    robot.stop(10);
     alignGreen();
     robot.stop(100);
 
