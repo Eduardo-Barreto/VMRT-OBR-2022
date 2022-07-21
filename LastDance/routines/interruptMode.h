@@ -4,10 +4,13 @@ void interruptMenu()
     bool wdtStarted = false;
     while (!digitalRead(startButton.pin))
     {
+        rightTurnLED.off();
+        greenLED.on();
+        leftTurnLED.off();
         if (!wdtStarted && !digitalRead(F1.pin))
         {
             wdtStarted = true;
-            wdt_enable(WDTO_2S);
+            wdt_enable(WDTO_1S);
             wdt_reset();
         }
 
@@ -19,4 +22,5 @@ void interruptMenu()
         }
     }
     robot.turnOnMotors();
+    greenLED.off();
 }
