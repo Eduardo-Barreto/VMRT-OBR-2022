@@ -113,16 +113,34 @@ public:
     /**
      * @brief Espera o botão ser pressionado enquando executa uma ação
      *
-     * @param doWhileWait: (void lambda) Ação a ser executada enquanto o botão estiver pressionado
+     * @param doWhileWait: (void lambda) Ação a ser executada enquanto o botão estiver solto
      *
      * @example
-     *     button.waitWhilePressed([]() -> void {
-     *        // Ação a ser executada enquanto o botão estiver pressionado
+     *     button.waitForPress([]() -> void {
+     *        // Ação a ser executada enquanto o botão estiver solto
      *    });
      */
     void waitForPress(void (*doWhileWait)() = ([]() -> void {}))
     {
         while (!isPressed())
+        {
+            doWhileWait();
+        }
+    }
+
+    /**
+     * @brief Espera o botão ser solto enquando executa uma ação
+     *
+     * @param doWhileWait: (void lambda) Ação a ser executada enquanto o botão estiver pressionado
+     *
+     * @example
+     *     button.waitForRelease([]() -> void {
+     *        // Ação a ser executada enquanto o botão estiver pressionado
+     *    });
+     */
+    void waitForRelease(void (*doWhileWait)() = ([]() -> void {}))
+    {
+        while (!isReleased())
         {
             doWhileWait();
         }
