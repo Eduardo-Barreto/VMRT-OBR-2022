@@ -23,6 +23,8 @@ private:
     VectorFloat gravity; // [x, y, z]            Vetor de gravidade
     float ypr[3];        // [yaw, pitch, roll]   Vetor de Yaw, Pitch e Roll
 
+    unsigned long lastRead = 0;
+
 public:
     float Yaw, Pitch, Roll;
 
@@ -72,6 +74,8 @@ public:
      */
     void read()
     {
+        if (millis() < lastRead + 16)
+            return;
         // Lê os dados do MPU
         if (mpu.dmpGetCurrentFIFOPacket(fifoBuffer))
         {
@@ -84,5 +88,6 @@ public:
         Yaw = ypr[0] * 180 / M_PI + 179.99;
         Pitch = ypr[1] * 180 / M_PI + 179.99;
         Roll = ypr[2] * 180 / M_PI + 179.99;
+        lastRead = millis();
     }
 };
