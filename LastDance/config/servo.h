@@ -2,12 +2,12 @@ class Servo
 {
 private:
     byte pin;
-    byte pos;
     int minPulseWidth;
     int maxPulseWidth;
     int refreshRate;
 
 public:
+    byte pos;
     Servo(byte _pin, byte initPosition = 0, int _minPulseWidth = 544, int _maxPulseWidth = 2400, int _refreshRate = 20000)
     {
         this->pin = _pin;
@@ -23,7 +23,8 @@ public:
     {
         targetPos = constrain(targetPos, 0, 180);
         int delayToMove = map(targetPos, 0, 180, minPulseWidth, maxPulseWidth);
-        for(int i = 0; i <= abs(targetPos - this->pos); i++){
+        for (int i = 0; i <= abs(targetPos - this->pos); i++)
+        {
             digitalWrite(pin, HIGH);
             delayMicroseconds(delayToMove);
             digitalWrite(pin, LOW);
