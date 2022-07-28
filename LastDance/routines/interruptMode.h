@@ -20,6 +20,17 @@ void interruptMenu()
             wdt_reset();
             wdt_disable();
         }
+
+        if (F2.fallingEdge())
+        {
+            state = !state;
+        }
+
+        if (F3.fallingEdge())
+        {
+            int adress = sizeof(calibration) * 9 + 1;
+            EEPROM.write(adress, gyro.Yaw);
+        }
     }
     robot.turnOnMotors();
     greenLED.off();
