@@ -66,8 +66,8 @@ public:
         this->read();
         float interval = (maxRead - minRead);
         interval = (interval / 100) * offset;
-        this->minGreen = raw - (interval * 1.5f);
-        this->maxGreen = raw + interval;
+        this->minGreen = raw - interval;
+        this->maxGreen = raw + (interval * 1.5f);
     }
 
     void forceGreen(float offset = 5)
@@ -75,8 +75,8 @@ public:
         float interval = (maxRead - minRead);
         interval = (interval / 100) * offset;
         float raw = minGreen + ((maxGreen - minGreen) / 2);
-        this->minGreen = raw - (interval * 1.5f);
-        this->maxGreen = raw + interval;
+        this->minGreen = raw - interval;
+        this->maxGreen = raw + (interval * 1.5f);
     }
 
     /**
