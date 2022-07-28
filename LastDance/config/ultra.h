@@ -10,7 +10,6 @@ class Ultrasonic
 private:
     byte triggerPin, echoPin;
     unsigned long readingTimeout;
-    int lastRead = 0;
     int timeToRead = 100;
     long lastReadTime = 0;
 
@@ -47,6 +46,7 @@ private:
     }
 
 public:
+    int lastRead = 0;
     Ultrasonic(byte _triggerPin, byte _echoPin, unsigned long _readingTimeout = 20000UL)
     {
         this->triggerPin = _triggerPin;
