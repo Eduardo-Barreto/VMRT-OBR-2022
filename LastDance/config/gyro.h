@@ -52,10 +52,17 @@ public:
         mpu.initialize();
 
         devStatus = mpu.dmpInitialize();
-        mpu.setXGyroOffset(220);
+        /* mpu.setXGyroOffset(220);
         mpu.setYGyroOffset(76);
         mpu.setZGyroOffset(-85);
-        mpu.setZAccelOffset(1788);
+        mpu.setZAccelOffset(1788); */
+
+        mpu.setXAccelOffset(-1213);
+        mpu.setYAccelOffset(-1045);
+        mpu.setZAccelOffset(2009);
+        mpu.setXGyroOffset(32);
+        mpu.setYGyroOffset(70);
+        mpu.setZGyroOffset(18);
 
         if (devStatus == 0)
         {
@@ -89,5 +96,11 @@ public:
         Pitch = ypr[1] * 180 / M_PI + 179.99;
         Roll = ypr[2] * 180 / M_PI + 179.99;
         lastRead = millis();
+        /*
+        if (Yaw < 0)
+        {
+            this->init();
+        }
+        */
     }
 };
