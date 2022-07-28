@@ -121,6 +121,12 @@ public:
         _pulse = 0;
     }
 
+    void move(int velocity)
+    {
+        this->set(velocity);
+        this->run();
+    }
+
     /**
      * @brief Habilita o motor de passo
      */
