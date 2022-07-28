@@ -1,8 +1,6 @@
 #define DEBUG 0
 #define DEBUG_LOG 0
 
-#define CALIBRATE_LINE_SENSORS 0
-
 #if DEBUG_LOG == 1
 #define DebugInit(x) Serial.begin(x)
 #define DebugLog(x) Serial.print(String(x))
@@ -13,10 +11,10 @@
 #define DebugLogln(x)
 #endif
 
-int masterPower = 80;
-int maxPower = 95;
-int targetPower = masterPower + 10;
-int turnPower = masterPower;
+volatile bool state = 1;            // Variável de estado (usada para debug)
+int masterPower = 60;               // Controlador principal de base da velocidade
+int maxPower = 75;                  // Velocidade máxima do robô ao seguir linha
+int targetPower = masterPower + 10; // Velocidade atual do robô ao seguir linha
 
 #include <avr/wdt.h>
 #include "config/createObjects.h"
@@ -32,7 +30,6 @@ void setup()
     greenLED.on();
     leftTurnLED.on();
     gyro.init();
-
     DebugInit(115200);
 
     startButton.waitForRelease([]() -> void
@@ -45,6 +42,15 @@ void setup()
     startButton.waitForPressAndRelease(
         []() -> void
         {
+            if (F1.isPressed() && F3.isPressed())
+            {
+                robot.turnOnMotors();
+                runCalibration();
+            }
+            if (F2.isPressed())
+            {
+                toggleCatcher();
+            }
             builtInLED.blink(200);
             rightTurnLED.blink(200);
             greenLED.blink(200);
@@ -61,42 +67,6 @@ void setup()
     motorLeft.on();
     motorRight.on();
 
-#if CALIBRATE_LINE_SENSORS == 1
-    greenLED.off();
-    rightTurnLED.on();
-    leftTurnLED.on();
-    calibrateLineFollower();
-    startButton.waitForPressAndRelease(
-        []() -> void
-        {
-            builtInLED.blink(200);
-            rightTurnLED.blink(200);
-            leftTurnLED.blink(200);
-        },
-        []() -> void
-        {
-            builtInLED.blink(100);
-            rightTurnLED.blink(100);
-            leftTurnLED.blink(100);
-        });
-    calibrateLineFollower();
-    rightTurnLED.off();
-    leftTurnLED.off();
-    delay(500);
-
-    startButton.waitForPressAndRelease(
-        []() -> void
-        { greenLED.blink(200); },
-        []() -> void
-        { greenLED.blink(100); });
-
-    greenLED.on();
-    greenSensors[0].setGreen();
-    greenSensors[1].setGreen();
-    delay(150);
-    saveCalibration();
-#endif
-
     loadCalibrationSaved();
     layCatcher();
     builtInLED.off();
@@ -107,18 +77,18 @@ void setup()
     delay(300);
 
     attachInterrupt(digitalPinToInterrupt(startButton.pin), interruptMenu, LOW);
-    /*
-    greenSensors[0].forceGreen(3);
-    greenSensors[1].forceGreen(3);
-    */
 }
 
-int angle = 0;
 void debugLoop()
 {
-    robot.turnOffMotors();
-
-    DebugLogln(centerUltra.read());
+    int turnForce = -1;
+    DebugLog(turnForce);
+    robot.turn((turnForce < 0 ? 5 : -5), 60);
+    F1.waitForPressAndRelease();
+    turnForce = 1;
+    DebugLog(turnForce);
+    robot.turn((turnForce < 0 ? 5 : -5), 60);
+    F1.waitForPressAndRelease();
 }
 
 void loop()
