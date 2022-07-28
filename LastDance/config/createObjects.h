@@ -1,9 +1,12 @@
+#include "ultra.h"
+Ultrasonic centerUltra(32, 11);
+Ultrasonic leftUltra(31, 10);
+Ultrasonic rightUltra(30, 9);
 #include "robot.h"
 #include "light.h"
 #include "led.h"
 #include "button.h"
 #include "servo.h"
-#include "ultra.h"
 
 led builtInLED(LED_BUILTIN);
 led rightTurnLED(27);
@@ -49,9 +52,14 @@ lightSensor greenSensors[2] = {
     {68},
     {69}};
 
-robotBase robot(&motorRight, &motorLeft, &gyro, 61);
+robotBase robot(&motorRight, &motorLeft, &gyro, 61, 175);
 
 Servo catcher(12, 90);
 Servo catcherBlocker(6, 90);
 
-Ultrasonic centerUltra(32, 11);
+int ortogonals[5] = {
+    0,
+    90,
+    180,
+    270,
+    360};
