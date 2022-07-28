@@ -1,1 +1,0 @@
-#define batteryPin A4
