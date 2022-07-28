@@ -194,3 +194,88 @@ void printCalibrationFollower()
         DebugLogln(";");
     }
 }
+
+void runCalibration()
+{
+    greenLED.off();
+    rightTurnLED.on();
+    leftTurnLED.on();
+    calibrateLineFollower();
+    startButton.waitForPressAndRelease(
+        []() -> void
+        {
+            builtInLED.blink(200);
+            rightTurnLED.blink(200);
+            leftTurnLED.blink(200);
+        },
+        []() -> void
+        {
+            builtInLED.blink(100);
+            rightTurnLED.blink(100);
+            leftTurnLED.blink(100);
+        });
+    calibrateLineFollower();
+    rightTurnLED.off();
+    leftTurnLED.off();
+    delay(500);
+
+    bool blinkRight = true;
+    bool blinkLeft = true;
+    while (startButton.isReleased())
+    {
+        greenLED.blink(200);
+        if (blinkLeft)
+        {
+            if (greenSensors[0].getLight() > 20 && greenSensors[0].getLight() <= 32)
+                leftTurnLED.on();
+            else
+                leftTurnLED.off();
+        }
+        else
+            leftTurnLED.off();
+
+        if (blinkRight)
+        {
+            if (greenSensors[1].getLight() > 20 && greenSensors[1].getLight() <= 32)
+                rightTurnLED.on();
+            else
+                rightTurnLED.off();
+        }
+        else
+            rightTurnLED.off();
+
+        if (F1.isPressed())
+        {
+            greenSensors[1].setGreen();
+            blinkRight = false;
+        }
+
+        if (F3.isPressed())
+        {
+            greenSensors[0].setGreen();
+            blinkLeft = false;
+        }
+    }
+
+    greenLED.off();
+    delay(150);
+    saveCalibration();
+}
+
+void printRawCalibration()
+{
+    for (byte i = 0; i < 7; i++)
+    {
+        DebugLog(lineSensors[i].minRead);
+        DebugLogln("~");
+        DebugLog(lineSensors[i].maxRead);
+        DebugLog(",");
+    }
+    DebugLog(greenSensors[0].minRead);
+    DebugLogln("~");
+    DebugLog(greenSensors[0].maxRead);
+    DebugLog(",");
+    DebugLog(greenSensors[1].minRead);
+    DebugLogln("~");
+    DebugLogln(greenSensors[1].maxRead);
+}
