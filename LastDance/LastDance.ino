@@ -92,7 +92,7 @@ void setup()
 unsigned long timer = 0;
 void debugLoop()
 {
-    robot.moveTime(70, 70, 3500);
+    robot.moveTime(25, 25, 3500);
     delay(1000);
 }
 

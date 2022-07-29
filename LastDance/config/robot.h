@@ -225,7 +225,7 @@ public:
         degrees = abs(degrees);
         velocity = min(abs(velocity), 85);
 
-        int offsetMotors = 15;
+        int offsetMotors = 35;
         if (gyro->Yaw < 0)
             offsetMotors = 10;
 
@@ -259,10 +259,10 @@ public:
         degrees = abs(degrees);
         velocity = min(abs(velocity), 85);
 
-        int offsetMotors = 5;
+        int offsetMotors = 10;
         gyro->read();
         if (gyro->Yaw < 0)
-            offsetMotors = 0;
+            offsetMotors = 5;
 
         int targetAngle = convertDegrees((gyro->Yaw + degrees));
 
