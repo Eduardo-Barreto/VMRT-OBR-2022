@@ -23,7 +23,7 @@ void interruptMenu()
 
         if (F2.fallingEdge())
         {
-            state = !state;
+            state++;
         }
 
         if (F3.fallingEdge())
