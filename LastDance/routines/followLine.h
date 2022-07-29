@@ -315,7 +315,7 @@ bool checkTurn(int turnForce = 60)
  *
  * @param ignoreUltra: Se deve ignorar leituras do sensor ultrassônico enquanto segue a linha
  */
-void runLineFollower(bool ignoreUltra = false)
+void runLineFollower(bool ignoreUltra = false, bool ignoreTurns = false)
 {
     if (targetPower < maxPower && millis() > incrementVelocityTime)
     {
@@ -329,8 +329,9 @@ void runLineFollower(bool ignoreUltra = false)
         if (centerRightBlack || rightBlack || (!ignoreUltra && centerUltra.read() < 20))
             break;
         readColors(8);
-        checkTurn();
-        robot.move(17, -17);
+        if (!ignoreTurns)
+            checkTurn();
+        robot.move(turnPower, -turnPower);
         lastCorrection = millis();
         targetPower = masterPower;
     }
@@ -340,8 +341,9 @@ void runLineFollower(bool ignoreUltra = false)
         if (centerLeftBlack || leftBlack || (!ignoreUltra && centerUltra.read() < 20))
             break;
         readColors(8);
-        checkTurn();
-        robot.move(-17, 17);
+        if (!ignoreTurns)
+            checkTurn();
+        robot.move(-turnPower, turnPower);
         lastCorrection = millis();
         targetPower = masterPower;
     }
@@ -391,23 +393,33 @@ void checkObstacle()
                 break;
         }
         robot.stop(100);
+
+        maxSteps = motorRight.motorSteps + robot.centimetersToSteps(20);
         while (leftUltra.read() <= 30)
         {
             robot.move(20, 20);
+            if (motorRight.motorSteps > maxSteps)
+                break;
         }
         robot.moveCentimeters(10, 60);
         robot.stop(10);
         robot.turnOneWheel(-90, 85);
         robot.stop(100);
 
+        maxSteps = motorRight.motorSteps + robot.centimetersToSteps(25);
         while (leftUltra.read() > 30)
         {
             robot.move(30, 30);
+            if (motorRight.motorSteps > maxSteps)
+                break;
         }
         while (leftUltra.read() < 30)
         {
             robot.move(30, 30);
+            if (motorRight.motorSteps > maxSteps)
+                break;
         }
+
         robot.moveCentimeters(10, 60);
         robot.stop(10);
         robot.turnOneWheel(-90, 85);
@@ -439,6 +451,36 @@ void checkObstacle()
     }
 }
 
+void followRamp()
+{
+    readColors();
+
+    unsigned long timeout = millis() + 300;
+    while (leftBlack && millis() < timeout)
+    {
+        readColors();
+        if (centerRightBlack || rightBlack || borderLeftBlack || borderRightBlack)
+            break;
+        robot.move(turnPower, -turnPower);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+    timeout = millis() + 300;
+    while (rightBlack && millis() < timeout)
+    {
+        readColors();
+        if (centerLeftBlack || leftBlack || borderLeftBlack || borderRightBlack)
+            break;
+        robot.move(-turnPower, turnPower);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+
+    robot.moveTime(targetPower, targetPower, 15);
+}
+
+#include "inclination.h"
+
 void runFloor()
 {
     readColors();
@@ -447,5 +489,14 @@ void runFloor()
     if (millis() > 300)
     {
         checkObstacle();
+        gyro.read();
+
+        if (checkRamp())
+        {
+            detachInterrupt(digitalPinToInterrupt(startButton.pin));
+            lowerCatcher();
+            state = 2;
+            return;
+        }
     }
 }
