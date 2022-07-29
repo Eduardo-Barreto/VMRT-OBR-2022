@@ -96,11 +96,5 @@ public:
         Pitch = ypr[1] * 180 / M_PI + 179.99;
         Roll = ypr[2] * 180 / M_PI + 179.99;
         lastRead = millis();
-        /*
-        if (Yaw < 0)
-        {
-            this->init();
-        }
-        */
     }
 };
