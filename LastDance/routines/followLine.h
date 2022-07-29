@@ -227,9 +227,15 @@ bool checkGreen(int turnForce = 60)
     robot.moveCentimeters(8, 50);
     robot.turn(((turnForce > 0) ? (30) : (-30)), 60);
 
+    int targetAngle = gyro.Yaw + (65 * (turnForce / abs(turnForce)));
     while (lineSensors[3].getLight() > blackThreshold + 10)
     {
         robot.move(-turnForce, turnForce);
+        gyro.read();
+        if (proximity(gyro.Yaw, targetAngle, 1.5f))
+        {
+            break;
+        }
     }
 
     returnRoutine();
@@ -300,10 +306,17 @@ bool checkTurn(int turnForce = 60)
 
     robot.turn((turnForce < 0 ? 5 : -5), 60);
     robot.moveCentimeters(8, 70);
+    gyro.read();
+    int targetAngle = gyro.Yaw + (95 * (turnForce / abs(turnForce)));
 
     while (lineSensors[3].getLight() > blackThreshold + 10)
     {
         robot.move(-turnForce, turnForce);
+        gyro.read();
+        if (proximity(gyro.Yaw, targetAngle, 1.5f))
+        {
+            break;
+        }
     }
 
     returnRoutine();
@@ -456,20 +469,20 @@ void followRamp()
     readColors();
 
     unsigned long timeout = millis() + 300;
-    while (leftBlack && millis() < timeout)
+    while (centerLeftBlack && millis() < timeout)
     {
         readColors();
-        if (centerRightBlack || rightBlack || borderLeftBlack || borderRightBlack)
+        if (borderLeftBlack || borderRightBlack)
             break;
         robot.move(turnPower, -turnPower);
         lastCorrection = millis();
         targetPower = masterPower;
     }
     timeout = millis() + 300;
-    while (rightBlack && millis() < timeout)
+    while (centerRightBlack && millis() < timeout)
     {
         readColors();
-        if (centerLeftBlack || leftBlack || borderLeftBlack || borderRightBlack)
+        if (borderLeftBlack || borderRightBlack)
             break;
         robot.move(-turnPower, turnPower);
         lastCorrection = millis();
