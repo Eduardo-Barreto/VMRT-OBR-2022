@@ -78,6 +78,8 @@ void rescue()
     robot.turn(180 * turnSide, 45);
     robot.alignAngle();
     robot.alignUltra(70, 40, 3);
+    robot.alignUltra(30, 40);
+    robot.alignAngle();
     turnSide = -turnSide;
     robot.turn(45 * turnSide, 45);
     robot.moveCentimeters(35, 80);
