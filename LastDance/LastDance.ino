@@ -11,17 +11,19 @@
 #define DebugLogln(x)
 #endif
 
-volatile bool state = 1;            // Variável de estado (usada para debug)
+volatile int state = 1;             // Variável de estado (usada para debug)
 int masterPower = 60;               // Controlador principal de base da velocidade
 int maxPower = 75;                  // Velocidade máxima do robô ao seguir linha
 int targetPower = masterPower + 10; // Velocidade atual do robô ao seguir linha
+int turnPower = 17;                 // Velocidade do robô ao virar seguindo linha
 
 #include <avr/wdt.h>
 #include "config/createObjects.h"
-#include "routines/followLine.h"
 #include "routines/calibrate.h"
 #include "routines/catcher.h"
 #include "routines/interruptMode.h"
+#include "routines/followLine.h"
+#include "routines/rescue.h"
 
 void setup()
 {
@@ -68,27 +70,30 @@ void setup()
     motorRight.on();
 
     loadCalibrationSaved();
-    layCatcher();
     builtInLED.off();
     rightTurnLED.off();
     greenLED.off();
     leftTurnLED.off();
-    layCatcher();
     delay(300);
+
+    if (catcher.pos == 0)
+    {
+        state = 2;
+    }
+    else
+    {
+        layCatcher();
+        state = 1;
+    }
 
     attachInterrupt(digitalPinToInterrupt(startButton.pin), interruptMenu, LOW);
 }
 
+unsigned long timer = 0;
 void debugLoop()
 {
-    int turnForce = -1;
-    DebugLog(turnForce);
-    robot.turn((turnForce < 0 ? 5 : -5), 60);
-    F1.waitForPressAndRelease();
-    turnForce = 1;
-    DebugLog(turnForce);
-    robot.turn((turnForce < 0 ? 5 : -5), 60);
-    F1.waitForPressAndRelease();
+    robot.moveTime(70, 70, 3500);
+    delay(1000);
 }
 
 void loop()
@@ -96,6 +101,23 @@ void loop()
 #if DEBUG == 1
     debugLoop();
 #else
-    runFloor();
+    switch (state)
+    {
+    case 2:
+        followRamp();
+        if (checkFloor())
+        {
+            state = 3;
+        }
+        break;
+
+    case 3:
+        rescue();
+        break;
+
+    default:
+        runFloor();
+        break;
+    }
 #endif
 }
