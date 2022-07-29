@@ -8,9 +8,9 @@ void lowerCatcher()
 
 void raiseCatcher()
 {
-    if (catcher.pos == 90)
+    if (catcher.pos == 100)
         return;
-    catcher.write(90);
+    catcher.write(100);
 }
 
 void layCatcher()
@@ -22,12 +22,12 @@ void layCatcher()
 
 void toggleCatcher()
 {
-    if (catcher.pos == 90)
-        layCatcher();
-    else if (catcher.pos == 0)
-        raiseCatcher();
-    else if (catcher.pos == 160)
+    if (catcher.pos == 100)
         lowerCatcher();
+    else if (catcher.pos == 0)
+        layCatcher();
+    else if (catcher.pos == 160)
+        raiseCatcher();
 }
 
 void catchBall()
