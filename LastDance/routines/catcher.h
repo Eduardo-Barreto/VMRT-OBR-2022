@@ -22,7 +22,7 @@ void layCatcher()
 
 void toggleCatcher()
 {
-    if (catcher.pos == 100)
+    if (catcher.pos == 100 || catcher.pos == 90)
         lowerCatcher();
     else if (catcher.pos == 0)
         layCatcher();
