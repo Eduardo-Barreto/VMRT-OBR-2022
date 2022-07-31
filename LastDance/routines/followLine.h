@@ -433,7 +433,7 @@ void checkObstacle()
                 break;
         }
 
-        robot.moveCentimeters(10, 60);
+        robot.moveCentimeters(12, 60);
         robot.stop(10);
         robot.turnOneWheel(-90, 85);
         robot.stop(10);
