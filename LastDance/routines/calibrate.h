@@ -71,7 +71,7 @@ void saveCalibration()
 void calibrateLineFollower()
 {
     unsigned long start = millis();
-    while (millis() - start < 1000)
+    while (millis() - start < 1500)
     {
         robot.move(20, 20);
         for (byte i = 0; i < 7; i++)
@@ -89,7 +89,7 @@ void calibrateLineFollower()
     }
     delay(500);
     start = millis();
-    while (millis() - start < 1000)
+    while (millis() - start < 1500)
     {
         robot.move(-20, -20);
         for (byte i = 0; i < 7; i++)
@@ -278,4 +278,21 @@ void printRawCalibration()
     DebugLog(greenSensors[1].minRead);
     DebugLogln("~");
     DebugLogln(greenSensors[1].maxRead);
+}
+
+void forceCalibrationFollower()
+{
+    F1.waitForPressAndRelease();
+    for (byte i = 0; i < 7; i++)
+    {
+        lineSensors[i].minRead = lineSensors[i].getRawRead();
+    }
+
+    F1.waitForPressAndRelease();
+    for (byte i = 0; i < 7; i++)
+    {
+        lineSensors[i].maxRead = lineSensors[i].getRawRead();
+    }
+    delay(150);
+    saveCalibration();
 }

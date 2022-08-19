@@ -1,6 +1,7 @@
 int borderThreshold = 80; // Valor mínimo para considerar que o sensor está diferente do seu oposto (direita-esquerda)
-int blackThreshold = 20;  // Valor máximo para considerar que o sensor está lendo preto
+int blackThreshold = 19;  // Valor máximo para considerar que o sensor está lendo preto
 
+byte centerLight;      // Valor lido do sensor de luz do meio
 byte centerRightLight; // Valor lido do sensor de luz do meio da direita
 byte centerLeftLight;  // Valor lido do sensor de luz do meio da esquerda
 byte rightLight;       // Valor lido do sensor de luz da direita
@@ -8,6 +9,7 @@ byte leftLight;        // Valor lido do sensor de luz da esquerda
 byte borderRightLight; // Valor lido do sensor de luz da borda da direita
 byte borderLeftLight;  // Valor lido do sensor de luz da borda da esquerda
 
+bool centerBlack;      // Indica se o valor do sensor de luz do meio é preto
 bool centerRightBlack; // Indica se o valor do sensor de luz do meio da direita é preto
 bool centerLeftBlack;  // Indica se o valor do sensor de luz do meio da esquerda é preto
 bool rightBlack;       // Indica se o valor do sensor de luz da direita é preto
@@ -79,6 +81,7 @@ void readColors(int thresholdDiff = 0)
     borderLeftLight = lineSensors[0].getLight();
     leftLight = lineSensors[1].getLight();
     centerLeftLight = lineSensors[2].getLight();
+    centerLight = lineSensors[3].getLight();
     centerRightLight = lineSensors[4].getLight();
     rightLight = lineSensors[5].getLight();
     borderRightLight = lineSensors[6].getLight();
@@ -86,6 +89,7 @@ void readColors(int thresholdDiff = 0)
     borderLeftBlack = lineSensors[0].getLight() < blackThreshold + thresholdDiff;
     leftBlack = lineSensors[1].getLight() < blackThreshold + thresholdDiff;
     centerLeftBlack = lineSensors[2].getLight() < blackThreshold + thresholdDiff;
+    centerBlack = lineSensors[3].getLight() < blackThreshold + thresholdDiff;
     centerRightBlack = lineSensors[4].getLight() < blackThreshold + thresholdDiff;
     rightBlack = lineSensors[5].getLight() < blackThreshold + thresholdDiff;
     borderRightBlack = lineSensors[6].getLight() < blackThreshold + thresholdDiff;
@@ -176,13 +180,15 @@ bool checkDeadEnd(int turnForce = 60)
 
         robot.moveCentimeters(7, 50);
 
-        robot.turn(160, turnForce);
+        robot.turn(175, turnForce);
 
         while (lineSensors[3].getLight() > blackThreshold + 10)
         {
             robot.move(-turnForce, turnForce);
         }
 
+        robot.moveTime(-20, -20, 400);
+        robot.stop(50);
         returnRoutine();
         return true;
     }
@@ -225,9 +231,9 @@ bool checkGreen(int turnForce = 60)
 
     delay(300);
     robot.moveCentimeters(8, 50);
-    robot.turn(((turnForce > 0) ? (30) : (-30)), 60);
+    robot.turn(((turnForce > 0) ? (85) : (-85)), 60);
 
-    int targetAngle = gyro.Yaw + (65 * (turnForce / abs(turnForce)));
+    int targetAngle = gyro.Yaw + (10 * (turnForce / abs(turnForce)));
     while (lineSensors[3].getLight() > blackThreshold + 10)
     {
         robot.move(-turnForce, turnForce);
@@ -238,6 +244,8 @@ bool checkGreen(int turnForce = 60)
         }
     }
 
+    robot.moveTime(-20, -20, 400);
+    robot.stop(50);
     returnRoutine();
     return true;
 }
@@ -269,7 +277,7 @@ bool checkTurn(int turnForce = 60)
     if (turnForce > 0)
     {
         timeout = millis() + 300;
-        while (((lineSensors[5].getLight() > blackThreshold - 5 || lineSensors[4].getLight() > blackThreshold - 5) && (lineSensors[1].getLight() > blackThreshold - 5 || lineSensors[2].getLight() > blackThreshold - 5)) && millis() < timeout)
+        while (((lineSensors[5].getLight() > blackThreshold - 10 || lineSensors[4].getLight() > blackThreshold - 10) && (lineSensors[1].getLight() > blackThreshold - 10 || lineSensors[2].getLight() > blackThreshold - 10)) && millis() < timeout)
         {
             robot.move(15, 0);
         }
@@ -277,12 +285,13 @@ bool checkTurn(int turnForce = 60)
     else
     {
         timeout = millis() + 300;
-        while (((lineSensors[5].getLight() > blackThreshold - 5 || lineSensors[4].getLight() > blackThreshold - 5) && (lineSensors[1].getLight() > blackThreshold - 5 || lineSensors[2].getLight() > blackThreshold - 5)) && millis() < timeout)
+        while (((lineSensors[5].getLight() > blackThreshold - 10 || lineSensors[4].getLight() > blackThreshold - 10) && (lineSensors[1].getLight() > blackThreshold - 10 || lineSensors[2].getLight() > blackThreshold - 10)) && millis() < timeout)
         {
             robot.move(0, 15);
         }
     }
 
+    robot.moveTime(20, 20, 100);
     robot.stop(50);
 
     readColors();
@@ -290,6 +299,7 @@ bool checkTurn(int turnForce = 60)
         return true;
 
     alignGreen();
+    robot.moveTime(20, 20, 50);
     robot.stop(50);
 
     readColors();
@@ -304,7 +314,7 @@ bool checkTurn(int turnForce = 60)
         return false;
     }
 
-    robot.turn((turnForce < 0 ? 5 : -5), 60);
+    robot.turn((turnForce < 0 ? 10 : -10), 60);
     robot.moveCentimeters(8, 70);
     gyro.read();
     int targetAngle = gyro.Yaw + (95 * (turnForce / abs(turnForce)));
@@ -319,6 +329,7 @@ bool checkTurn(int turnForce = 60)
         }
     }
 
+    robot.moveTime(-20, -20, 275);
     returnRoutine();
     return true;
 }
@@ -336,32 +347,38 @@ void runLineFollower(bool ignoreUltra = false, bool ignoreTurns = false)
         targetPower++;
     }
 
-    unsigned long timeout = millis() + 300;
-    while ((centerLeftBlack || leftBlack) && millis() < timeout)
+    if (centerLeftBlack || leftBlack)
     {
-        if (centerRightBlack || rightBlack || (!ignoreUltra && centerUltra.read() < 20))
-            break;
-        readColors(8);
-        if (!ignoreTurns)
-            checkTurn();
-        robot.move(turnPower, -turnPower);
-        lastCorrection = millis();
-        targetPower = masterPower;
+        unsigned long timeout = millis() + 500;
+        while ((!centerBlack || centerLeftBlack || leftBlack) && millis() < timeout)
+        {
+            if (centerRightBlack || rightBlack || (!ignoreUltra && centerUltra.read() < 20))
+                break;
+            readColors(15);
+            if (!ignoreTurns)
+                checkTurn();
+            robot.move(turnPower, -turnPower);
+            lastCorrection = millis();
+            targetPower = masterPower;
+        }
     }
-    timeout = millis() + 300;
-    while ((centerRightBlack || rightBlack) && millis() < timeout)
+    if (centerRightBlack || rightBlack)
     {
-        if (centerLeftBlack || leftBlack || (!ignoreUltra && centerUltra.read() < 20))
-            break;
-        readColors(8);
-        if (!ignoreTurns)
-            checkTurn();
-        robot.move(-turnPower, turnPower);
-        lastCorrection = millis();
-        targetPower = masterPower;
+        unsigned long timeout = millis() + 500;
+        while ((!centerBlack || centerRightBlack || rightBlack) && millis() < timeout)
+        {
+            if (centerLeftBlack || leftBlack || (!ignoreUltra && centerUltra.read() < 20))
+                break;
+            readColors(15);
+            if (!ignoreTurns)
+                checkTurn();
+            robot.move(-turnPower, turnPower);
+            lastCorrection = millis();
+            targetPower = masterPower;
+        }
     }
 
-    robot.moveTime(targetPower, targetPower, 15);
+    robot.moveTime(targetPower, targetPower, 15, false);
 }
 
 void checkObstacle()
@@ -468,7 +485,7 @@ void followRamp()
 {
     readColors();
 
-    unsigned long timeout = millis() + 300;
+    unsigned long timeout = millis() + 500;
     while (centerLeftBlack && millis() < timeout)
     {
         readColors();
@@ -478,7 +495,7 @@ void followRamp()
         lastCorrection = millis();
         targetPower = masterPower;
     }
-    timeout = millis() + 300;
+    timeout = millis() + 500;
     while (centerRightBlack && millis() < timeout)
     {
         readColors();
@@ -503,7 +520,6 @@ void runFloor()
     {
         checkObstacle();
         gyro.read();
-
         if (checkRamp())
         {
             detachInterrupt(digitalPinToInterrupt(startButton.pin));

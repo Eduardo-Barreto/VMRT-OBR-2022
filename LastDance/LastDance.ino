@@ -11,7 +11,7 @@
 #define DebugLogln(x)
 #endif
 
-volatile int state = 1;             // Variável de estado (usada para debug)
+volatile int state = 1;             // Variável de estado
 int masterPower = 60;               // Controlador principal de base da velocidade
 int maxPower = 75;                  // Velocidade máxima do robô ao seguir linha
 int targetPower = masterPower + 10; // Velocidade atual do robô ao seguir linha
@@ -90,10 +90,12 @@ void setup()
 }
 
 unsigned long timer = 0;
+int stateTest = 0;
 void debugLoop()
 {
-    robot.moveTime(25, 25, 3500);
-    delay(1000);
+    robot.turnOffMotors();
+    printAllLightSensors();
+    DebugLogln();
 }
 
 void loop()

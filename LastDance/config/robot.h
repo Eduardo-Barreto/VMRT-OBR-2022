@@ -145,14 +145,15 @@ public:
      *
      * TODO: Controlar aceleração durante o movimento;
      */
-    void moveTime(int velocityRight, int velocityLeft, unsigned long time)
+    void moveTime(int velocityRight, int velocityLeft, unsigned long time, bool stopAfter = true)
     {
         unsigned long endTime = millis() + time;
         while (millis() < endTime)
         {
             this->move(velocityRight, velocityLeft);
         }
-        this->stop();
+        if (stopAfter)
+            this->stop();
     }
 
     /**

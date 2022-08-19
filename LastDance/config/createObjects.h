@@ -24,8 +24,8 @@ stepperMotor motorRight(
     7,    // Direction pin
     8,    // Enable pin
     400,  // Resolution
-    7000, // Minimum velocity
-    400   // Maximum velocity
+    4490, // Minimum velocity
+    256   // Maximum velocity
 );
 
 stepperMotor motorLeft(
@@ -33,8 +33,8 @@ stepperMotor motorLeft(
     5,    // Direction pin
     8,    // Enable pin
     400,  // Resolution
-    7000, // Minimum velocity
-    400   // Maximum velocity
+    4490, // Minimum velocity
+    256   // Maximum velocity
 );
 
 gyroSensor gyro;
@@ -52,10 +52,10 @@ lightSensor greenSensors[2] = {
     {68},
     {69}};
 
-robotBase robot(&motorRight, &motorLeft, &gyro, 61, 175);
+robotBase robot(&motorRight, &motorLeft, &gyro, 39, 180);
 
-Servo catcher(12, 90);
-Servo catcherBlocker(6, 90);
+Servo catcher(35, 90);
+Servo catcherBlocker(37, 90);
 
 int ortogonals[5] = {
     0,
