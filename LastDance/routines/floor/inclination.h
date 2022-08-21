@@ -1,3 +1,31 @@
+void followRamp()
+{
+    readColors();
+
+    unsigned long timeout = millis() + 500;
+    while (centerLeftBlack && millis() < timeout)
+    {
+        readColors();
+        if (borderLeftBlack || borderRightBlack)
+            break;
+        robot.move(turnPower, -turnPower);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+    timeout = millis() + 500;
+    while (centerRightBlack && millis() < timeout)
+    {
+        readColors();
+        if (borderLeftBlack || borderRightBlack)
+            break;
+        robot.move(-turnPower, turnPower);
+        lastCorrection = millis();
+        targetPower = masterPower;
+    }
+
+    robot.moveTime(targetPower, targetPower, 15);
+}
+
 bool checkRamp()
 {
     unsigned long startTime = 0;

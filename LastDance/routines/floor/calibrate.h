@@ -35,6 +35,20 @@ void loadCalibrationSaved()
 
         address += sizeof(calibrationRead);
     }
+
+    EEPROM.get(address, calibrationRead);
+    leftRGB.minRead = calibrationRead.minRead;
+    leftRGB.maxRead = calibrationRead.maxRead;
+    leftRGB.minGreen = calibrationRead.minGreen;
+    leftRGB.maxGreen = calibrationRead.maxGreen;
+    address += sizeof(calibrationRead);
+
+    EEPROM.get(address, calibrationRead);
+    rightRGB.minRead = calibrationRead.minRead;
+    rightRGB.maxRead = calibrationRead.maxRead;
+    rightRGB.minGreen = calibrationRead.minGreen;
+    rightRGB.maxGreen = calibrationRead.maxGreen;
+    address += sizeof(calibrationRead);
 }
 
 void saveCalibration()
@@ -63,6 +77,20 @@ void saveCalibration()
 
         address += sizeof(calibrationWrite);
     }
+
+    calibrationWrite.minRead = leftRGB.minRead;
+    calibrationWrite.maxRead = leftRGB.maxRead;
+    calibrationWrite.minGreen = leftRGB.minGreen;
+    calibrationWrite.maxGreen = leftRGB.maxGreen;
+    EEPROM.put(address, calibrationWrite);
+    address += sizeof(calibrationWrite);
+
+    calibrationWrite.minRead = rightRGB.minRead;
+    calibrationWrite.maxRead = rightRGB.maxRead;
+    calibrationWrite.minGreen = rightRGB.minGreen;
+    calibrationWrite.maxGreen = rightRGB.maxGreen;
+    EEPROM.put(address, calibrationWrite);
+    address += sizeof(calibrationWrite);
 }
 
 /**
@@ -86,6 +114,13 @@ void calibrateLineFollower()
             greenSensors[j].minRead = (greenSensors[j].raw < greenSensors[j].minRead) ? greenSensors[j].raw : greenSensors[j].minRead;
             greenSensors[j].maxRead = (greenSensors[j].raw > greenSensors[j].maxRead) ? greenSensors[j].raw : greenSensors[j].maxRead;
         }
+
+        leftRGB.read();
+        leftRGB.minRead = (leftRGB.raw < leftRGB.minRead) ? leftRGB.raw : leftRGB.minRead;
+        leftRGB.maxRead = (leftRGB.raw > leftRGB.maxRead) ? leftRGB.raw : leftRGB.maxRead;
+        rightRGB.read();
+        rightRGB.minRead = (rightRGB.raw < rightRGB.minRead) ? rightRGB.raw : rightRGB.minRead;
+        rightRGB.maxRead = (rightRGB.raw > rightRGB.maxRead) ? rightRGB.raw : rightRGB.maxRead;
     }
     delay(500);
     start = millis();
@@ -104,94 +139,13 @@ void calibrateLineFollower()
             greenSensors[j].minRead = (greenSensors[j].raw < greenSensors[j].minRead) ? greenSensors[j].raw : greenSensors[j].minRead;
             greenSensors[j].maxRead = (greenSensors[j].raw > greenSensors[j].maxRead) ? greenSensors[j].raw : greenSensors[j].maxRead;
         }
-    }
-}
 
-void printCalibrationSaved()
-{
-    int address = 0;
-    calibration calibrationRead;
-
-    for (byte i = 0; i < 7; i++)
-    {
-        EEPROM.get(address, calibrationRead);
-
-        DebugLog("Sensor ");
-        DebugLog(i);
-        DebugLog(": ");
-        DebugLog(calibrationRead.minRead);
-        DebugLog(" ~ ");
-        DebugLogln(calibrationRead.maxRead);
-
-        address += sizeof(calibrationRead);
-    }
-
-    DebugLogln();
-
-    for (byte i = 0; i < 2; i++)
-    {
-        EEPROM.get(address, calibrationRead);
-
-        DebugLog("Sensor verde ");
-        DebugLog(i);
-        DebugLog(": ");
-        DebugLog(calibrationRead.minRead);
-        DebugLog(" ~ ");
-        DebugLogln(calibrationRead.maxRead);
-
-        DebugLog("\tValor verde ");
-        DebugLog(i);
-        DebugLog(": ");
-        DebugLog(calibrationRead.minGreen);
-        DebugLog(" ~ ");
-        DebugLogln(calibrationRead.maxGreen);
-
-        address += sizeof(calibrationRead);
-    }
-}
-
-void printCalibrationFollower()
-{
-    // print all calibration for lineSensors
-    for (byte i = 0; i < 7; i++)
-    {
-        DebugLog("lineSensors[");
-        DebugLog(i);
-        DebugLog("].minRead = ");
-        DebugLog(lineSensors[i].minRead);
-        DebugLogln(";");
-        DebugLog("lineSensors[");
-        DebugLog(i);
-        DebugLog("].maxRead = ");
-        DebugLog(lineSensors[i].maxRead);
-        DebugLogln(";");
-    }
-    for (byte j = 0; j < 2; j++)
-    {
-        DebugLog("greenSensors[");
-        DebugLog(j);
-        DebugLog("].minRead = ");
-        DebugLog(greenSensors[j].minRead);
-        DebugLogln(";");
-        DebugLog("greenSensors[");
-        DebugLog(j);
-        DebugLog("].maxRead = ");
-        DebugLog(greenSensors[j].maxRead);
-        DebugLogln(";");
-    }
-
-    for (byte k = 0; k < 2; k++)
-    {
-        DebugLog("greenSensors[");
-        DebugLog(k);
-        DebugLog("].minGreen = ");
-        DebugLog(greenSensors[k].minGreen);
-        DebugLogln(";");
-        DebugLog("greenSensors[");
-        DebugLog(k);
-        DebugLog("].maxGreen = ");
-        DebugLog(greenSensors[k].maxGreen);
-        DebugLogln(";");
+        leftRGB.read();
+        leftRGB.minRead = (leftRGB.raw < leftRGB.minRead) ? leftRGB.raw : leftRGB.minRead;
+        leftRGB.maxRead = (leftRGB.raw > leftRGB.maxRead) ? leftRGB.raw : leftRGB.maxRead;
+        rightRGB.read();
+        rightRGB.minRead = (rightRGB.raw < rightRGB.minRead) ? rightRGB.raw : rightRGB.minRead;
+        rightRGB.maxRead = (rightRGB.raw > rightRGB.maxRead) ? rightRGB.raw : rightRGB.maxRead;
     }
 }
 
@@ -260,24 +214,6 @@ void runCalibration()
     greenLED.off();
     delay(150);
     saveCalibration();
-}
-
-void printRawCalibration()
-{
-    for (byte i = 0; i < 7; i++)
-    {
-        DebugLog(lineSensors[i].minRead);
-        DebugLogln("~");
-        DebugLog(lineSensors[i].maxRead);
-        DebugLog(",");
-    }
-    DebugLog(greenSensors[0].minRead);
-    DebugLogln("~");
-    DebugLog(greenSensors[0].maxRead);
-    DebugLog(",");
-    DebugLog(greenSensors[1].minRead);
-    DebugLogln("~");
-    DebugLogln(greenSensors[1].maxRead);
 }
 
 void forceCalibrationFollower()

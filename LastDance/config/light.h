@@ -35,6 +35,9 @@ public:
     int maxGreen;        // Valor máximo do intervalo considerado como verde
     int raw;             // Valor cru lido do sensor de luz
     byte light;          // Valor tratado de iluminação do sensor de luz (0%~100%)
+    byte RGBRed;         // Porcentagem de vermelho lida do sensor de luz
+    byte RGBGreen;       // Porcentagem de verde lida do sensor de luz
+    byte RGBBlue;        // Porcentagem de azul lida do sensor de luz
     bool black;          // Indica se o sensor está lendo preto
     byte countGreen;     // Flag de controle para verificar se o verde é real
     bool green;          // Indica se o sensor está lendo verde
@@ -88,18 +91,35 @@ public:
         this->light = constrain(map(raw, minRead, maxRead, 100, 0), 0, 100);
         this->black = light <= blackThreshold;
         this->green = (raw >= minGreen && raw <= maxGreen);
+    }
 
-        /* if (raw >= minGreen && raw <= maxGreen)
-            countGreen++;
-        else
-        {
-            this->green = false;
-            countGreen = (countGreen > 0) ? countGreen - 1 : countGreen;
-            return;
-        }
+    void readRGB()
+    {
+        blueLightSensor.off();
+        greenLightSensor.off();
 
-        if (countGreen >= 6)
-            this->green = true; */
+        redLightSensor.on();
+        delayMicroseconds(15);
+        byte preRed = this->getLight();
+        delayMicroseconds(15);
+        redLightSensor.off();
+
+        greenLightSensor.on();
+        delayMicroseconds(15);
+        byte preGreen = this->getLight();
+        delayMicroseconds(15);
+        greenLightSensor.off();
+
+        blueLightSensor.on();
+        delayMicroseconds(15);
+        byte preBlue = this->getLight();
+        delayMicroseconds(15);
+        blueLightSensor.off();
+
+        int totalRGB = (preRed + preGreen + preBlue);
+        this->RGBRed = (byte)(map(preRed, 0, totalRGB, 0, 100));
+        this->RGBGreen = (byte)(map(preGreen, 0, totalRGB, 0, 100));
+        this->RGBBlue = (byte)(map(preBlue, 0, totalRGB, 0, 100));
     }
 
     /**
@@ -133,5 +153,23 @@ public:
     {
         read();
         return this->green;
+    }
+
+    byte getRGBRed()
+    {
+        readRGB();
+        return this->RGBRed;
+    }
+
+    byte getRGBGreen()
+    {
+        readRGB();
+        return this->RGBGreen;
+    }
+
+    byte getRGBBlue()
+    {
+        readRGB();
+        return this->RGBBlue;
     }
 };

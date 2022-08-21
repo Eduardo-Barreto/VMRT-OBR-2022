@@ -1,5 +1,5 @@
-#define DEBUG 0
-#define DEBUG_LOG 0
+#define DEBUG 1
+#define DEBUG_LOG 1
 
 #if DEBUG_LOG == 1
 #define DebugInit(x) Serial.begin(x)
@@ -19,11 +19,12 @@ int turnPower = 17;                 // Velocidade do robô ao virar seguindo lin
 
 #include <avr/wdt.h>
 #include "config/createObjects.h"
-#include "routines/calibrate.h"
+#include "routines/floor/calibrate.h"
 #include "routines/catcher.h"
 #include "routines/interruptMode.h"
-#include "routines/followLine.h"
+#include "routines/floor/followLine.h"
 #include "routines/rescue.h"
+#include "routines/printThings.h"
 
 void setup()
 {
@@ -94,7 +95,7 @@ int stateTest = 0;
 void debugLoop()
 {
     robot.turnOffMotors();
-    printAllLightSensors();
+    printRGBValues();
     DebugLogln();
 }
 

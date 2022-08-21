@@ -3,15 +3,19 @@ Ultrasonic centerUltra(32, 11);
 Ultrasonic leftUltra(31, 10);
 Ultrasonic rightUltra(30, 9);
 #include "robot.h"
-#include "light.h"
 #include "led.h"
-#include "button.h"
-#include "servo.h"
-
 led builtInLED(LED_BUILTIN);
 led rightTurnLED(27);
 led greenLED(25);
 led leftTurnLED(23);
+
+led redLightSensor(48);
+led blueLightSensor(50);
+led greenLightSensor(46);
+
+#include "light.h"
+#include "button.h"
+#include "servo.h"
 
 button startButton(3);
 button F1(53);
@@ -51,6 +55,9 @@ lightSensor lineSensors[7] = {
 lightSensor greenSensors[2] = {
     {68},
     {69}};
+
+lightSensor leftRGB(55);
+lightSensor rightRGB(54);
 
 robotBase robot(&motorRight, &motorLeft, &gyro, 39, 180);
 
