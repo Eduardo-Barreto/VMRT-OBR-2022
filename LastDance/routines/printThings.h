@@ -143,20 +143,20 @@ void printRawCalibration()
 void printRGBValues()
 {
     DebugLog("rgb(");
-    DebugLog(leftRGB.getRGBRed() * 255);
+    DebugLog(leftRGB.getRGBRed() * 2.55f);
     DebugLog(", ");
-    DebugLog(leftRGB.getRGBGreen() * 255);
+    DebugLog(leftRGB.getRGBGreen() * 2.55f);
     DebugLog(", ");
-    DebugLog(leftRGB.getRGBBlue() * 255);
+    DebugLog(leftRGB.getRGBBlue() * 2.55f);
     DebugLog(")");
 
     DebugLog("\t");
 
     DebugLog("rgb(");
-    DebugLog(rightRGB.getRGBRed() * 255);
+    DebugLog(rightRGB.getRGBRed() * 2.55f);
     DebugLog(", ");
-    DebugLog(rightRGB.getRGBGreen() * 255);
+    DebugLog(rightRGB.getRGBGreen() * 2.55f);
     DebugLog(", ");
-    DebugLog(rightRGB.getRGBBlue() * 255);
+    DebugLog(rightRGB.getRGBBlue() * 2.55f);
     DebugLog(")");
 }
