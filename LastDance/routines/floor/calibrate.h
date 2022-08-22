@@ -154,6 +154,9 @@ void runCalibration()
     greenLED.off();
     rightTurnLED.on();
     leftTurnLED.on();
+    redLightSensor.on();
+    greenLightSensor.on();
+    blueLightSensor.on();
     calibrateLineFollower();
     startButton.waitForPressAndRelease(
         []() -> void
@@ -210,6 +213,9 @@ void runCalibration()
             blinkLeft = false;
         }
     }
+    redLightSensor.off();
+    greenLightSensor.off();
+    blueLightSensor.off();
 
     greenLED.off();
     delay(150);
