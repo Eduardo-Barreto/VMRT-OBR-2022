@@ -7,6 +7,13 @@ struct calibration
 
     int minGreen;
     int maxGreen;
+
+    int minReadRed;
+    int maxReadRed;
+    int minReadGreen;
+    int maxReadGreen;
+    int minReadBlue;
+    int maxReadBlue;
 };
 
 void loadCalibrationSaved()
@@ -41,6 +48,12 @@ void loadCalibrationSaved()
     leftRGB.maxRead = calibrationRead.maxRead;
     leftRGB.minGreen = calibrationRead.minGreen;
     leftRGB.maxGreen = calibrationRead.maxGreen;
+    leftRGB.minReadRed = calibrationRead.minReadRed;
+    leftRGB.maxReadRed = calibrationRead.maxReadRed;
+    leftRGB.minReadGreen = calibrationRead.minReadGreen;
+    leftRGB.maxReadGreen = calibrationRead.maxReadGreen;
+    leftRGB.minReadBlue = calibrationRead.minReadBlue;
+    leftRGB.maxReadBlue = calibrationRead.maxReadBlue;
     address += sizeof(calibrationRead);
 
     EEPROM.get(address, calibrationRead);
@@ -48,6 +61,12 @@ void loadCalibrationSaved()
     rightRGB.maxRead = calibrationRead.maxRead;
     rightRGB.minGreen = calibrationRead.minGreen;
     rightRGB.maxGreen = calibrationRead.maxGreen;
+    rightRGB.minReadRed = calibrationRead.minReadRed;
+    rightRGB.maxReadRed = calibrationRead.maxReadRed;
+    rightRGB.minReadGreen = calibrationRead.minReadGreen;
+    rightRGB.maxReadGreen = calibrationRead.maxReadGreen;
+    rightRGB.minReadBlue = calibrationRead.minReadBlue;
+    rightRGB.maxReadBlue = calibrationRead.maxReadBlue;
     address += sizeof(calibrationRead);
 }
 
@@ -82,6 +101,12 @@ void saveCalibration()
     calibrationWrite.maxRead = leftRGB.maxRead;
     calibrationWrite.minGreen = leftRGB.minGreen;
     calibrationWrite.maxGreen = leftRGB.maxGreen;
+    calibrationWrite.minReadRed = leftRGB.minReadRed;
+    calibrationWrite.maxReadRed = leftRGB.maxReadRed;
+    calibrationWrite.minReadGreen = leftRGB.minReadGreen;
+    calibrationWrite.maxReadGreen = leftRGB.maxReadGreen;
+    calibrationWrite.minReadBlue = leftRGB.minReadBlue;
+    calibrationWrite.maxReadBlue = leftRGB.maxReadBlue;
     EEPROM.put(address, calibrationWrite);
     address += sizeof(calibrationWrite);
 
@@ -89,6 +114,12 @@ void saveCalibration()
     calibrationWrite.maxRead = rightRGB.maxRead;
     calibrationWrite.minGreen = rightRGB.minGreen;
     calibrationWrite.maxGreen = rightRGB.maxGreen;
+    calibrationWrite.minReadRed = rightRGB.minReadRed;
+    calibrationWrite.maxReadRed = rightRGB.maxReadRed;
+    calibrationWrite.minReadGreen = rightRGB.minReadGreen;
+    calibrationWrite.maxReadGreen = rightRGB.maxReadGreen;
+    calibrationWrite.minReadBlue = rightRGB.minReadBlue;
+    calibrationWrite.maxReadBlue = rightRGB.maxReadBlue;
     EEPROM.put(address, calibrationWrite);
     address += sizeof(calibrationWrite);
 }
@@ -149,14 +180,98 @@ void calibrateLineFollower()
     }
 }
 
+void calibrateRGBSensor()
+{
+    redLedSensor.on();
+    greenLedSensor.off();
+    blueLedSensor.off();
+
+    unsigned long timeout = millis() + 1500;
+    while (millis() < timeout)
+    {
+        robot.move(20, 20);
+        leftRGB.read();
+        leftRGB.minReadRed = (leftRGB.raw < leftRGB.minReadRed) ? leftRGB.raw : leftRGB.minReadRed;
+        leftRGB.maxReadRed = (leftRGB.raw > leftRGB.maxReadRed) ? leftRGB.raw : leftRGB.maxReadRed;
+        rightRGB.read();
+        rightRGB.minReadRed = (rightRGB.raw < rightRGB.minReadRed) ? rightRGB.raw : rightRGB.minReadRed;
+        rightRGB.maxReadRed = (rightRGB.raw > rightRGB.maxReadRed) ? rightRGB.raw : rightRGB.maxReadRed;
+    }
+    timeout = millis() + 1500;
+    while (millis() < timeout)
+    {
+        robot.move(-20, -20);
+        leftRGB.read();
+        leftRGB.minReadRed = (leftRGB.raw < leftRGB.minReadRed) ? leftRGB.raw : leftRGB.minReadRed;
+        leftRGB.maxReadRed = (leftRGB.raw > leftRGB.maxReadRed) ? leftRGB.raw : leftRGB.maxReadRed;
+        rightRGB.read();
+        rightRGB.minReadRed = (rightRGB.raw < rightRGB.minReadRed) ? rightRGB.raw : rightRGB.minReadRed;
+        rightRGB.maxReadRed = (rightRGB.raw > rightRGB.maxReadRed) ? rightRGB.raw : rightRGB.maxReadRed;
+    }
+
+    redLedSensor.off();
+    greenLedSensor.on();
+    blueLedSensor.off();
+
+    timeout = millis() + 1500;
+    while (millis() < timeout)
+    {
+        robot.move(20, 20);
+        leftRGB.read();
+        leftRGB.minReadGreen = (leftRGB.raw < leftRGB.minReadGreen) ? leftRGB.raw : leftRGB.minReadGreen;
+        leftRGB.maxReadGreen = (leftRGB.raw > leftRGB.maxReadGreen) ? leftRGB.raw : leftRGB.maxReadGreen;
+        rightRGB.read();
+        rightRGB.minReadGreen = (rightRGB.raw < rightRGB.minReadGreen) ? rightRGB.raw : rightRGB.minReadGreen;
+        rightRGB.maxReadGreen = (rightRGB.raw > rightRGB.maxReadGreen) ? rightRGB.raw : rightRGB.maxReadGreen;
+    }
+    timeout = millis() + 1500;
+    while (millis() < timeout)
+    {
+        robot.move(-20, -20);
+        leftRGB.read();
+        leftRGB.minReadGreen = (leftRGB.raw < leftRGB.minReadGreen) ? leftRGB.raw : leftRGB.minReadGreen;
+        leftRGB.maxReadGreen = (leftRGB.raw > leftRGB.maxReadGreen) ? leftRGB.raw : leftRGB.maxReadGreen;
+        rightRGB.read();
+        rightRGB.minReadGreen = (rightRGB.raw < rightRGB.minReadGreen) ? rightRGB.raw : rightRGB.minReadGreen;
+        rightRGB.maxReadGreen = (rightRGB.raw > rightRGB.maxReadGreen) ? rightRGB.raw : rightRGB.maxReadGreen;
+    }
+
+    redLedSensor.off();
+    greenLedSensor.off();
+    blueLedSensor.on();
+
+    timeout = millis() + 1500;
+    while (millis() < timeout)
+    {
+        robot.move(20, 20);
+        leftRGB.read();
+        leftRGB.minReadBlue = (leftRGB.raw < leftRGB.minReadBlue) ? leftRGB.raw : leftRGB.minReadBlue;
+        leftRGB.maxReadBlue = (leftRGB.raw > leftRGB.maxReadBlue) ? leftRGB.raw : leftRGB.maxReadBlue;
+        rightRGB.read();
+        rightRGB.minReadBlue = (rightRGB.raw < rightRGB.minReadBlue) ? rightRGB.raw : rightRGB.minReadBlue;
+        rightRGB.maxReadBlue = (rightRGB.raw > rightRGB.maxReadBlue) ? rightRGB.raw : rightRGB.maxReadBlue;
+    }
+    timeout = millis() + 1500;
+    while (millis() < timeout)
+    {
+        robot.move(-20, -20);
+        leftRGB.read();
+        leftRGB.minReadBlue = (leftRGB.raw < leftRGB.minReadBlue) ? leftRGB.raw : leftRGB.minReadBlue;
+        leftRGB.maxReadBlue = (leftRGB.raw > leftRGB.maxReadBlue) ? leftRGB.raw : leftRGB.maxReadBlue;
+        rightRGB.read();
+        rightRGB.minReadBlue = (rightRGB.raw < rightRGB.minReadBlue) ? rightRGB.raw : rightRGB.minReadBlue;
+        rightRGB.maxReadBlue = (rightRGB.raw > rightRGB.maxReadBlue) ? rightRGB.raw : rightRGB.maxReadBlue;
+    }
+}
+
 void runCalibration()
 {
     greenLED.off();
     rightTurnLED.on();
     leftTurnLED.on();
-    redLightSensor.on();
-    greenLightSensor.on();
-    blueLightSensor.on();
+    redLedSensor.on();
+    greenLedSensor.on();
+    blueLedSensor.on();
     calibrateLineFollower();
     startButton.waitForPressAndRelease(
         []() -> void
@@ -172,6 +287,8 @@ void runCalibration()
             leftTurnLED.blink(100);
         });
     calibrateLineFollower();
+    startButton.waitForPressAndRelease();
+    calibrateRGBSensor();
     rightTurnLED.off();
     leftTurnLED.off();
     delay(500);
@@ -204,18 +321,20 @@ void runCalibration()
         if (F1.isPressed())
         {
             greenSensors[1].setGreen();
+            rightRGB.setGreen();
             blinkRight = false;
         }
 
         if (F3.isPressed())
         {
             greenSensors[0].setGreen();
+            leftRGB.setGreen();
             blinkLeft = false;
         }
     }
-    redLightSensor.off();
-    greenLightSensor.off();
-    blueLightSensor.off();
+    redLedSensor.off();
+    greenLedSensor.off();
+    blueLedSensor.off();
 
     greenLED.off();
     delay(150);

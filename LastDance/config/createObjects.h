@@ -9,9 +9,9 @@ led rightTurnLED(27);
 led greenLED(25);
 led leftTurnLED(23);
 
-led redLightSensor(48);
-led blueLightSensor(50);
-led greenLightSensor(46);
+led redLedSensor(48);
+led blueLedSensor(50);
+led greenLedSensor(46);
 
 #include "light.h"
 #include "button.h"
@@ -56,8 +56,8 @@ lightSensor greenSensors[2] = {
     {68},
     {69}};
 
-lightSensor leftRGB(55);
-lightSensor rightRGB(54);
+lightSensor leftRGB(55, 0, 100);
+lightSensor rightRGB(54, 0, 100);
 
 robotBase robot(&motorRight, &motorLeft, &gyro, 39, 180);
 

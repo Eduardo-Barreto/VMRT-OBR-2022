@@ -4,41 +4,57 @@ int initAngle = 0;
 
 void findTriangle()
 {
-    raiseCatcher();
     robot.moveTime(70, 70, 400);
-    turnSide = 1;
-    robot.turn(25, 60);
-    robot.turn(-90, 60);
+    catchBall();
+    if (rightUltra.read() > leftUltra.read())
+    {
+        turnSide = -1;
+        robot.turn(90, 60);
+    }
+    else
+    {
+        turnSide = 1;
+        robot.turn(-90, 60);
+    }
 
+    catchBall();
     unsigned long timeout = millis() + 3000;
     while (millis() < timeout)
     {
         robot.move(-60, -60);
-        if (bumper.isPressed())
-            break;
     }
     gyro.init();
-    layCatcher();
-    robot.moveCentimeters(15, 45);
-    robot.turn(-10 * turnSide, 60);
+    robot.alignAngle();
 
     for (int i = 1; i <= 3; i++)
     {
-        while (centerUltra.read() > 45)
+        robot.alignAngle();
+        while (!proximity(centerUltra.read(), 38, 3))
         {
             robot.move(50, 50);
         }
+        int distanceWall = (turnSide < 0) ? rightUltra.read() : leftUltra.read();
+        robot.alignAngle();
+        greenLED.on();
 
         while (centerUltra.read() >= 35)
         {
             robot.move(25, 25);
         }
+        greenLED.off();
 
         robot.alignAngle();
         robot.alignUltra(25, 35, 3);
+
         robot.turn(45 * turnSide, 45);
-        robot.moveCentimeters(20, 80);
-        robot.turn(90 * turnSide, 45);
+        catchBall();
+        robot.moveCentimeters(35 - distanceWall, 80);
+
+        robot.turn(45 * turnSide, 45);
+        robot.alignAngle();
+        robot.turn(45 * turnSide, 45);
+        catchBall();
+        lowerCatcher();
         unsigned long timeout = millis() + 1750;
         while (millis() < timeout)
         {
@@ -46,16 +62,35 @@ void findTriangle()
             if (bumper.isPressed())
             {
                 robot.stop();
+                raiseCatcher();
                 triangle = i;
                 robot.moveTime(80, 80, 500);
-                robot.turn(-75 * turnSide, 60);
-                robot.moveTime(-32, -32, 250);
+                robot.turn(-45 * turnSide, 60);
+                robot.alignAngle();
+                robot.turn(-90 * turnSide, 60);
+                robot.alignAngle();
+                robot.turn(-45 * turnSide, 60);
+                robot.moveTime(32, 32, 1250);
+                openBlocker();
+                delay(500);
+                closeBlocker();
+                delay(250);
+                robot.moveTime(-80, -80, 300);
+                robot.turn(45 * turnSide, 60);
+                robot.alignAngle();
+                robot.turn(90 * turnSide, 60);
+                robot.alignAngle();
+                robot.turn(45 * turnSide, 60);
                 return;
             }
         }
         robot.stop();
+        layCatcher();
+        robot.moveTime(30, 30, 500);
         robot.turn(-45 * turnSide, 45);
         robot.alignAngle();
+        catchBall();
+        robot.moveTime(70, 70, 400);
     }
 }
 

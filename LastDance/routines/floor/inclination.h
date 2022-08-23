@@ -60,5 +60,7 @@ bool checkFloor()
             return true;
         }
     }
+    rightTurnLED.off();
+    leftTurnLED.off();
     return false;
 }

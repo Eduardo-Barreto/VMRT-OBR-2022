@@ -19,8 +19,6 @@ int green[2]; */
 class lightSensor
 {
 private:
-    byte pin; // Pino do sensor de luz
-
     void init()
     {
         // Configura o pino do sensor de luz
@@ -28,19 +26,29 @@ private:
     }
 
 public:
-    byte blackThreshold; // Valor mínimo para considerar que o sensor está lendo preto
-    int minRead;         // Valor mínimo lido na calibração
-    int maxRead;         // Valor máximo lido na calibração
-    int minGreen;        // Valor mínimo do intervalo considerado como verde
-    int maxGreen;        // Valor máximo do intervalo considerado como verde
-    int raw;             // Valor cru lido do sensor de luz
-    byte light;          // Valor tratado de iluminação do sensor de luz (0%~100%)
-    byte RGBRed;         // Porcentagem de vermelho lida do sensor de luz
-    byte RGBGreen;       // Porcentagem de verde lida do sensor de luz
-    byte RGBBlue;        // Porcentagem de azul lida do sensor de luz
-    bool black;          // Indica se o sensor está lendo preto
-    byte countGreen;     // Flag de controle para verificar se o verde é real
-    bool green;          // Indica se o sensor está lendo verde
+    byte pin;         // Pino do sensor de luz
+    int minRead;      // Valor mínimo lido na calibração
+    int maxRead;      // Valor máximo lido na calibração
+    int minReadRed;   // Valor mínimo lido na calibração do vermelho
+    int maxReadRed;   // Valor máximo lido na calibração do vermelho
+    int minReadGreen; // Valor mínimo lido na calibração do verde
+    int maxReadGreen; // Valor máximo lido na calibração do verde
+    int minReadBlue;  // Valor mínimo lido na calibração do azul
+    int maxReadBlue;  // Valor máximo lido na calibração do azul
+    int minGreen;     // Valor mínimo do intervalo considerado como verde
+    int maxGreen;     // Valor máximo do intervalo considerado como verde
+    int raw;          // Valor cru lido do sensor de luz
+    byte light;       // Valor tratado de iluminação do sensor de luz (0%~100%)
+    int lightRed;     // Valor tratado de iluminação com luz vermelha
+    int lightGreen;   // Valor tratado de iluminação com luz verde
+    int lightBlue;    // Valor tratado de iluminação com luz azul
+    int RGBRed;       // Porcentagem de vermelho lida do sensor de luz
+    int RGBGreen;     // Porcentagem de verde lida do sensor de luz
+    int RGBBlue;      // Porcentagem de azul lida do sensor de luz
+    byte countGreen;  // Flag de controle para verificar se o verde é real
+    bool green;       // Indica se o sensor está lendo verde
+    int minOut;
+    int maxOut;
 
     /**
      * @brief Construtor do sensor de luz
@@ -50,12 +58,13 @@ public:
      * @param maxRead: Valor máximo lido na calibração
      * @param blackThreshold: Valor mínimo para considerar que o sensor está lendo preto
      */
-    lightSensor(byte pin, int minRead = 1023, int maxRead = 0, byte blackThreshold = 50)
+    lightSensor(byte pin, int minOut = 100, int maxOut = 0, int minRead = 1023, int maxRead = 0)
     {
         this->pin = pin;
         this->minRead = minRead;
         this->maxRead = maxRead;
-        this->blackThreshold = blackThreshold;
+        this->minOut = minOut;
+        this->maxOut = maxOut;
         init();
     }
 
@@ -88,35 +97,61 @@ public:
     void read()
     {
         this->raw = analogRead(pin);
-        this->light = constrain(map(raw, minRead, maxRead, 100, 0), 0, 100);
-        this->black = light <= blackThreshold;
+        this->light = constrain(map(raw, minRead, maxRead, minOut, maxOut), 0, 100);
+        this->lightRed = constrain(map(raw, minReadRed, maxReadRed, minOut, maxOut), 0, 100);
+        this->lightGreen = constrain(map(raw, minReadGreen, maxReadGreen, minOut, maxOut), 0, 100);
+        this->lightBlue = constrain(map(raw, minReadBlue, maxReadBlue, minOut, maxOut), 0, 100);
         this->green = (raw >= minGreen && raw <= maxGreen);
+    }
+
+    void readAbsoluteRGB()
+    {
+        blueLedSensor.off();
+        greenLedSensor.off();
+
+        redLedSensor.on();
+        delay(100);
+        this->lightRed = this->getRawRead();
+        delay(100);
+        redLedSensor.off();
+
+        greenLedSensor.on();
+        delay(100);
+        this->lightGreen = this->getRawRead();
+        delay(100);
+        greenLedSensor.off();
+
+        blueLedSensor.on();
+        delay(100);
+        this->lightBlue = this->getRawRead();
+        delay(100);
+        blueLedSensor.off();
     }
 
     void readRGB()
     {
-        blueLightSensor.off();
-        greenLightSensor.off();
+        blueLedSensor.off();
+        greenLedSensor.off();
 
-        redLightSensor.on();
-        delayMicroseconds(15);
-        byte preRed = this->getLight();
-        delayMicroseconds(15);
-        redLightSensor.off();
+        redLedSensor.on();
+        delay(50);
+        byte preRed = this->getLightRed();
+        delay(50);
+        redLedSensor.off();
 
-        greenLightSensor.on();
-        delayMicroseconds(15);
-        byte preGreen = this->getLight();
-        delayMicroseconds(15);
-        greenLightSensor.off();
+        greenLedSensor.on();
+        delay(50);
+        byte preGreen = this->getLightGreen();
+        delay(50);
+        greenLedSensor.off();
 
-        blueLightSensor.on();
-        delayMicroseconds(15);
-        byte preBlue = this->getLight();
-        delayMicroseconds(15);
-        blueLightSensor.off();
+        blueLedSensor.on();
+        delay(50);
+        byte preBlue = this->getLightBlue();
+        delay(50);
+        blueLedSensor.off();
 
-        int totalRGB = (preRed + preGreen + preBlue);
+        int totalRGB = (preRed + preGreen + preBlue)+1;
         this->RGBRed = (byte)(map(preRed, 0, totalRGB, 0, 100));
         this->RGBGreen = (byte)(map(preGreen, 0, totalRGB, 0, 100));
         this->RGBBlue = (byte)(map(preBlue, 0, totalRGB, 0, 100));
@@ -142,6 +177,24 @@ public:
     {
         read();
         return this->light;
+    }
+
+    byte getLightRed()
+    {
+        read();
+        return this->lightRed;
+    }
+
+    byte getLightGreen()
+    {
+        read();
+        return this->lightGreen;
+    }
+
+    byte getLightBlue()
+    {
+        read();
+        return this->lightBlue;
     }
 
     /**

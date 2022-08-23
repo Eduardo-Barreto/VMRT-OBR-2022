@@ -49,14 +49,14 @@ bool checkGreen(int turnForce = 60)
     if (checkDeadEnd())
         return true;
 
-    if (rightGreen)
+    if (rightGreen || rightRGB.getGreen())
     {
         turnForce = turnForce;
         leftTurnLED.off();
         rightTurnLED.on();
         greenLED.on();
     }
-    else if (leftGreen)
+    else if (leftGreen || leftRGB.getGreen())
     {
         turnForce = -turnForce;
         leftTurnLED.on();

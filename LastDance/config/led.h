@@ -1,7 +1,6 @@
 class led
 {
 private:
-    byte pin;                // Pino do LED
     unsigned long lastBlink; // Última vez que o LED foi piscado
 
     void init()
@@ -11,6 +10,7 @@ private:
     }
 
 public:
+    byte pin;   // Pino do LED
     bool state; // Indica se o LED está ligado ou desligado
 
     /**

@@ -1,5 +1,5 @@
-#define DEBUG 1
-#define DEBUG_LOG 1
+#define DEBUG 0
+#define DEBUG_LOG 0
 
 #if DEBUG_LOG == 1
 #define DebugInit(x) Serial.begin(x)
@@ -24,6 +24,7 @@ int turnPower = 17;                 // Velocidade do robô ao virar seguindo lin
 #include "routines/interruptMode.h"
 #include "routines/floor/followLine.h"
 #include "routines/rescue.h"
+#include "config/buzzer.h"
 #include "routines/printThings.h"
 
 void setup()
@@ -65,6 +66,7 @@ void setup()
             rightTurnLED.blink(100);
             greenLED.blink(100);
             leftTurnLED.blink(100);
+            readAllLightSensors();
         });
 
     motorLeft.on();
@@ -86,7 +88,6 @@ void setup()
         layCatcher();
         state = 1;
     }
-
     attachInterrupt(digitalPinToInterrupt(startButton.pin), interruptMenu, LOW);
 }
 
@@ -95,8 +96,9 @@ int stateTest = 0;
 void debugLoop()
 {
     robot.turnOffMotors();
-    printRGBValues();
-    DebugLogln();
+    // testAll();
+    bumper.waitForPressAndRelease();
+    catchBall();
 }
 
 void loop()

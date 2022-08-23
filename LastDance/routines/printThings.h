@@ -102,6 +102,10 @@ void printAllLightSensors(bool ignoreGreen = false)
         DebugLog(greenSensors[j].getLight());
         DebugLog("\t");
     }
+
+    DebugLog(leftRGB.getLight());
+    DebugLog("\t");
+    DebugLog(rightRGB.getLight());
 }
 
 void printAllRawReads(bool ignoreGreen = false)
@@ -120,6 +124,10 @@ void printAllRawReads(bool ignoreGreen = false)
         DebugLog(greenSensors[j].getRawRead());
         DebugLog("\t");
     }
+
+    DebugLog(leftRGB.getRawRead());
+    DebugLog("\t");
+    DebugLog(rightRGB.getRawRead());
 }
 
 void printRawCalibration()
@@ -159,4 +167,41 @@ void printRGBValues()
     DebugLog(", ");
     DebugLog(rightRGB.getRGBBlue() * 2.55f);
     DebugLog(")");
+}
+
+void testAll()
+{
+    printAllRawReads();
+    DebugLogln();
+    if (F1.isPressed())
+    {
+        openBlocker();
+        nokia();
+        closeBlocker();
+    }
+    if (F2.risingEdge())
+    {
+        toggleCatcher();
+    }
+    if (F3.risingEdge())
+    {
+        rightTurnLED.toggle();
+        leftTurnLED.toggle();
+        greenLED.toggle();
+        builtInLED.toggle();
+        redLedSensor.toggle();
+        greenLedSensor.toggle();
+        blueLedSensor.toggle();
+    }
+    while (bumper.isPressed())
+    {
+        gyro.read();
+        DebugLog(leftUltra.read());
+        DebugLog("\t");
+        DebugLog(centerUltra.read());
+        DebugLog("\t");
+        DebugLog(rightUltra.read());
+        DebugLog("\t");
+        DebugLogln(gyro.Yaw);
+    }
 }

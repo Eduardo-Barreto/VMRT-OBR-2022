@@ -1,4 +1,3 @@
-
 void lowerCatcher()
 {
     if (catcher.pos == 0)
@@ -30,14 +29,6 @@ void toggleCatcher()
         raiseCatcher();
 }
 
-void catchBall()
-{
-    lowerCatcher();
-    delay(150);
-    robot.moveTime(50, 50, 750);
-    robot.moveTime(-50, -50, 750);
-}
-
 void openBlocker()
 {
     if (catcherBlocker.pos == 110)
@@ -50,4 +41,18 @@ void closeBlocker()
     if (catcherBlocker.pos == 85)
         return;
     catcherBlocker.write(85);
+}
+
+void catchBall(int time = 400)
+{
+    catcher.write(30);
+    openBlocker();
+    lowerCatcher();
+    robot.moveTime(-70, -70, time);
+    delay(100);
+    robot.moveTime(70, 70, time);
+    catcher.write(15);
+    closeBlocker();
+    delay(250);
+    layCatcher();
 }

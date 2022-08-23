@@ -176,7 +176,9 @@ void runFloor()
         if (checkRamp())
         {
             detachInterrupt(digitalPinToInterrupt(startButton.pin));
-            lowerCatcher();
+            redLedSensor.on();
+            greenLedSensor.off();
+            blueLedSensor.off();
             state = 2;
             return;
         }
