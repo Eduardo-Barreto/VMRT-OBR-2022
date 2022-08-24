@@ -352,4 +352,14 @@ public:
             this->moveToAngle(270);
         }
     }
+
+    unsigned long getRightSteps()
+    {
+        return motorRight->motorSteps;
+    }
+
+    unsigned long getLeftSteps()
+    {
+        return motorLeft->motorSteps;
+    }
 };

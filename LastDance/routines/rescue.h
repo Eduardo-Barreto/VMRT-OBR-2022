@@ -1,6 +1,8 @@
 char turnSide = 0;
 byte triangle = 3;
-int initAngle = 0;
+unsigned long ySteps = 0;
+unsigned long xSteps = 0;
+int distanceMid = 0;
 
 void findTriangle()
 {
@@ -28,12 +30,22 @@ void findTriangle()
 
     for (int i = 1; i <= 3; i++)
     {
+        if (i == 2)
+            ySteps = robot.getRightSteps();
+
+        if (i == 3)
+            xSteps = robot.getRightSteps();
+
         robot.alignAngle();
         while (!proximity(centerUltra.read(), 38, 3))
         {
             robot.move(50, 50);
         }
         int distanceWall = (turnSide < 0) ? rightUltra.read() : leftUltra.read();
+        if (i == 2)
+            ySteps = robot.getRightSteps() - ySteps;
+        if (i == 3)
+            xSteps = robot.getRightSteps() - xSteps;
         robot.alignAngle();
         greenLED.on();
 
@@ -53,7 +65,7 @@ void findTriangle()
         robot.turn(45 * turnSide, 45);
         robot.alignAngle();
         robot.turn(45 * turnSide, 45);
-        catchBall();
+        catchBall(400, false);
         lowerCatcher();
         unsigned long timeout = millis() + 1750;
         while (millis() < timeout)
@@ -75,28 +87,109 @@ void findTriangle()
                 delay(500);
                 closeBlocker();
                 delay(250);
+                openBlocker();
+                delay(500);
+                closeBlocker();
+                delay(250);
                 robot.moveTime(-80, -80, 300);
                 robot.turn(45 * turnSide, 60);
-                robot.alignAngle();
-                robot.turn(90 * turnSide, 60);
                 robot.alignAngle();
                 robot.turn(45 * turnSide, 60);
                 return;
             }
         }
+        if (i == 1)
+            robot.moveToAngle(convertDegrees(360 + (315 * turnSide)));
+        if (i == 2)
+            robot.moveToAngle(convertDegrees(360 + (45 * turnSide)));
+        if (i == 3)
+            robot.moveToAngle(convertDegrees(360 + (135 * turnSide)));
+
         robot.stop();
         layCatcher();
+        if (i == 3)
+            break;
         robot.moveTime(30, 30, 500);
         robot.turn(-45 * turnSide, 45);
         robot.alignAngle();
         catchBall();
         robot.moveTime(70, 70, 400);
     }
+
+    if (!proximity((xSteps + 35), (ySteps + 35), robot.centimetersToSteps(20)))
+    {
+        distanceMid = (sqrt(pow((xSteps + 40), 2) + pow((ySteps + 40), 2))) / 2;
+        // 3x3
+        for (int j = 1; j <= 3; j++)
+        {
+            lowerCatcher();
+            if (j == 1)
+            {
+                robot.moveTime(75, 75, 3250);
+            }
+            else
+            {
+                robot.moveTime(75, 75, 1625);
+            }
+
+            robot.moveTime(-50, -50, 300);
+
+            if (j == 1)
+                robot.moveToAngle(convertDegrees(360 + (135 * turnSide)));
+            if (j == 2)
+                robot.moveToAngle(convertDegrees(360 + (225 * turnSide)));
+            if (j == 3)
+                robot.moveToAngle(convertDegrees(360 + (315 * turnSide)));
+
+            robot.moveTime(-50, -50, 300);
+
+            layCatcher();
+            delay(350);
+
+            if (lowerUltra.read() < 10)
+            {
+                triangle = j;
+                robot.moveTime(70, 70, 1500);
+                openBlocker();
+                delay(500);
+                closeBlocker();
+                delay(250);
+                openBlocker();
+                delay(500);
+                closeBlocker();
+                delay(250);
+                robot.moveTime(-80, -80, 300);
+                robot.turn(45 * turnSide, 60);
+                robot.alignAngle();
+                robot.turn(45 * turnSide, 60);
+                return;
+            }
+
+            robot.turn(-45 * turnSide, 60);
+            robot.alignAngle();
+            robot.turn(-90 * turnSide, 60);
+            robot.alignAngle();
+            robot.turn(-45 * turnSide, 60);
+            robot.moveCentimeters(distanceMid, 80);
+
+            robot.turn(-45 * turnSide, 60);
+            robot.alignAngle();
+            robot.turn(-45 * turnSide, 60);
+        }
+        // aaa
+        delay(999999);
+    }
+    else
+    {
+        // 4x3
+        delay(999999);
+    }
 }
 
 void rescue()
 {
     findTriangle();
+    delay(999999);
     // o contrario da direcao do triangulo
     lowerCatcher();
     robot.moveTime(70, 70, 3000);

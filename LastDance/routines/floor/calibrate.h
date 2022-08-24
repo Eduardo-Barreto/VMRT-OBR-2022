@@ -269,9 +269,9 @@ void runCalibration()
     greenLED.off();
     rightTurnLED.on();
     leftTurnLED.on();
-    redLedSensor.on();
-    greenLedSensor.on();
-    blueLedSensor.on();
+    redLedSensor.off();
+    greenLedSensor.off();
+    blueLedSensor.off();
     calibrateLineFollower();
     startButton.waitForPressAndRelease(
         []() -> void
@@ -287,8 +287,10 @@ void runCalibration()
             leftTurnLED.blink(100);
         });
     calibrateLineFollower();
+    /*
     startButton.waitForPressAndRelease();
     calibrateRGBSensor();
+    */
     rightTurnLED.off();
     leftTurnLED.off();
     delay(500);

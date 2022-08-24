@@ -200,6 +200,8 @@ void testAll()
         DebugLog("\t");
         DebugLog(centerUltra.read());
         DebugLog("\t");
+        DebugLog(lowerUltra.read());
+        DebugLog("\t");
         DebugLog(rightUltra.read());
         DebugLog("\t");
         DebugLogln(gyro.Yaw);

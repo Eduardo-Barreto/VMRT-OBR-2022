@@ -2,6 +2,7 @@
 Ultrasonic centerUltra(32, 11);
 Ultrasonic leftUltra(31, 10);
 Ultrasonic rightUltra(30, 9);
+Ultrasonic lowerUltra(33, 13);
 #include "robot.h"
 #include "led.h"
 led builtInLED(LED_BUILTIN);
@@ -60,7 +61,6 @@ lightSensor leftRGB(55, 0, 100);
 lightSensor rightRGB(54, 0, 100);
 
 robotBase robot(&motorRight, &motorLeft, &gyro, 39, 180);
-
 Servo catcher(35, 90);
 Servo catcherBlocker(37, 90);
 

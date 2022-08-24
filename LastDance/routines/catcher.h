@@ -43,7 +43,7 @@ void closeBlocker()
     catcherBlocker.write(85);
 }
 
-void catchBall(int time = 400)
+void catchBall(int time = 400, bool layOnFinish = true)
 {
     catcher.write(30);
     openBlocker();
@@ -51,8 +51,10 @@ void catchBall(int time = 400)
     robot.moveTime(-70, -70, time);
     delay(100);
     robot.moveTime(70, 70, time);
-    catcher.write(15);
+    if (layOnFinish)
+        catcher.write(15);
     closeBlocker();
     delay(250);
-    layCatcher();
+    if (layOnFinish)
+        layCatcher();
 }

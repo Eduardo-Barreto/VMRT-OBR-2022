@@ -1,5 +1,5 @@
-#define DEBUG 0
-#define DEBUG_LOG 0
+#define DEBUG 1
+#define DEBUG_LOG 1
 
 #if DEBUG_LOG == 1
 #define DebugInit(x) Serial.begin(x)
@@ -89,6 +89,9 @@ void setup()
         state = 1;
     }
     attachInterrupt(digitalPinToInterrupt(startButton.pin), interruptMenu, LOW);
+    redLedSensor.off();
+    greenLedSensor.off();
+    blueLedSensor.off();
 }
 
 unsigned long timer = 0;
@@ -96,9 +99,7 @@ int stateTest = 0;
 void debugLoop()
 {
     robot.turnOffMotors();
-    // testAll();
-    bumper.waitForPressAndRelease();
-    catchBall();
+    testAll();
 }
 
 void loop()

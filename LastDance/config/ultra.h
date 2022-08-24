@@ -51,6 +51,7 @@ public:
     {
         this->triggerPin = _triggerPin;
         this->echoPin = _echoPin;
+        this->lastReadTime = 0;
         this->readingTimeout = _readingTimeout;
         pinMode(this->triggerPin, OUTPUT);
         pinMode(this->echoPin, INPUT);

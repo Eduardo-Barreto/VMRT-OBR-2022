@@ -49,14 +49,14 @@ bool checkGreen(int turnForce = 60)
     if (checkDeadEnd())
         return true;
 
-    if (rightGreen || rightRGB.getGreen())
+    if (rightGreen)
     {
         turnForce = turnForce;
         leftTurnLED.off();
         rightTurnLED.on();
         greenLED.on();
     }
-    else if (leftGreen || leftRGB.getGreen())
+    else if (leftGreen)
     {
         turnForce = -turnForce;
         leftTurnLED.on();
@@ -148,8 +148,6 @@ bool checkTurn(int turnForce = 60)
     robot.moveTime(20, 20, 50);
     alignGreen();
     robot.stop(50);
-
-    robot.stop(1500);
 
     readColors();
     if (checkGreen())
