@@ -94,8 +94,9 @@ unsigned long timer = 0;
 int stateTest = 0;
 void debugLoop()
 {
+    turnSide = 1;
+    rescue();
     robot.turnOffMotors();
-    testAll();
 }
 
 void loop()

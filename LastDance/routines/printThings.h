@@ -169,6 +169,32 @@ void printRGBValues()
     DebugLog(")");
 }
 
+void testRGB()
+{
+    DebugLog(leftRGB.getRawRead());
+    DebugLog("\t");
+    DebugLogln(rightRGB.getRawRead());
+
+    if (F1.risingEdge())
+    {
+        redLedSensor.toggle();
+    }
+    if (F2.risingEdge())
+    {
+        greenLedSensor.toggle();
+    }
+    if (F3.risingEdge())
+    {
+        blueLedSensor.toggle();
+    }
+    if (bumper.risingEdge())
+    {
+        redLedSensor.toggle();
+        greenLedSensor.toggle();
+        blueLedSensor.toggle();
+    }
+}
+
 void testAll()
 {
     printAllRawReads();

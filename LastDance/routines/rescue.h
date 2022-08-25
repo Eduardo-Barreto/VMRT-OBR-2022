@@ -1,8 +1,20 @@
+int diagonal = 3550;
+
 char turnSide = 0;
 byte triangle = 3;
 unsigned long ySteps = 0;
 unsigned long xSteps = 0;
 int distanceMid = 0;
+
+void alignFrontTriangle(int i)
+{
+    if (i == 1)
+        robot.moveToAngle(convertDegrees(360 + (225 * turnSide)));
+    if (i == 2)
+        robot.moveToAngle(convertDegrees(360 + (135 * turnSide)));
+    if (i == 3)
+        robot.moveToAngle(convertDegrees(360 + (315 * turnSide)));
+}
 
 void findTriangle()
 {
@@ -19,7 +31,8 @@ void findTriangle()
         robot.turn(-90, 60);
     }
 
-    catchBall();
+    catchBall(400, false);
+    lowerCatcher();
     unsigned long timeout = millis() + 3000;
     while (millis() < timeout)
     {
@@ -27,44 +40,34 @@ void findTriangle()
     }
     gyro.init();
     robot.alignAngle();
+    layCatcher();
+    robot.moveTime(75, 75, 700);
+    robot.turn(45 * turnSide, 45);
 
     for (int i = 1; i <= 3; i++)
     {
-        if (i == 2)
-            ySteps = robot.getRightSteps();
+        alignFrontTriangle(i);
+        pickCatcher();
+        alignFrontTriangle(i);
 
-        if (i == 3)
-            xSteps = robot.getRightSteps();
+        if (i == i)
+            robot.moveTime(75, 75, diagonal);
+        else
+            robot.moveTime(75, 75, diagonal / 2);
 
-        robot.alignAngle();
-        while (!proximity(centerUltra.read(), 38, 3))
-        {
-            robot.move(50, 50);
-        }
-        int distanceWall = (turnSide < 0) ? rightUltra.read() : leftUltra.read();
-        if (i == 2)
-            ySteps = robot.getRightSteps() - ySteps;
-        if (i == 3)
-            xSteps = robot.getRightSteps() - xSteps;
-        robot.alignAngle();
-        greenLED.on();
-
-        while (centerUltra.read() >= 35)
-        {
-            robot.move(25, 25);
-        }
-        greenLED.off();
-
-        robot.alignAngle();
-        robot.alignUltra(25, 35, 3);
-
-        robot.turn(45 * turnSide, 45);
-        catchBall();
-        robot.moveCentimeters(35 - distanceWall, 80);
+        alignFrontTriangle(i);
+        catchBall(400, false);
+        lowerCatcher();
+        delay(250);
+        robot.moveTime(-30, -30, 500);
+        raiseCatcher();
 
         robot.turn(45 * turnSide, 45);
         robot.alignAngle();
+        robot.turn(90 * turnSide, 45);
+        robot.alignAngle();
         robot.turn(45 * turnSide, 45);
+
         catchBall(400, false);
         lowerCatcher();
         unsigned long timeout = millis() + 1750;
@@ -83,113 +86,109 @@ void findTriangle()
                 robot.alignAngle();
                 robot.turn(-45 * turnSide, 60);
                 robot.moveTime(32, 32, 1250);
-                openBlocker();
-                delay(500);
-                closeBlocker();
-                delay(250);
-                openBlocker();
-                delay(500);
-                closeBlocker();
-                delay(250);
-                robot.moveTime(-80, -80, 300);
-                robot.turn(45 * turnSide, 60);
-                robot.alignAngle();
-                robot.turn(45 * turnSide, 60);
+                releaseVictim();
                 return;
             }
         }
-        if (i == 1)
-            robot.moveToAngle(convertDegrees(360 + (315 * turnSide)));
-        if (i == 2)
-            robot.moveToAngle(convertDegrees(360 + (45 * turnSide)));
-        if (i == 3)
-            robot.moveToAngle(convertDegrees(360 + (135 * turnSide)));
-
-        robot.stop();
-        layCatcher();
-        if (i == 3)
-            break;
-        robot.moveTime(30, 30, 500);
-        robot.turn(-45 * turnSide, 45);
-        robot.alignAngle();
-        catchBall();
-        robot.moveTime(70, 70, 400);
-    }
-
-    if (!proximity((xSteps + 35), (ySteps + 35), robot.centimetersToSteps(20)))
-    {
-        distanceMid = (sqrt(pow((xSteps + 40), 2) + pow((ySteps + 40), 2))) / 2;
-        // 3x3
-        for (int j = 1; j <= 3; j++)
-        {
-            lowerCatcher();
-            if (j == 1)
-            {
-                robot.moveTime(75, 75, 3250);
-            }
-            else
-            {
-                robot.moveTime(75, 75, 1625);
-            }
-
-            robot.moveTime(-50, -50, 300);
-
-            if (j == 1)
-                robot.moveToAngle(convertDegrees(360 + (135 * turnSide)));
-            if (j == 2)
-                robot.moveToAngle(convertDegrees(360 + (225 * turnSide)));
-            if (j == 3)
-                robot.moveToAngle(convertDegrees(360 + (315 * turnSide)));
-
-            robot.moveTime(-50, -50, 300);
-
-            layCatcher();
-            delay(350);
-
-            if (lowerUltra.read() < 10)
-            {
-                triangle = j;
-                robot.moveTime(70, 70, 1500);
-                openBlocker();
-                delay(500);
-                closeBlocker();
-                delay(250);
-                openBlocker();
-                delay(500);
-                closeBlocker();
-                delay(250);
-                robot.moveTime(-80, -80, 300);
-                robot.turn(45 * turnSide, 60);
-                robot.alignAngle();
-                robot.turn(45 * turnSide, 60);
-                return;
-            }
-
-            robot.turn(-45 * turnSide, 60);
-            robot.alignAngle();
-            robot.turn(-90 * turnSide, 60);
-            robot.alignAngle();
-            robot.turn(-45 * turnSide, 60);
-            robot.moveCentimeters(distanceMid, 80);
-
-            robot.turn(-45 * turnSide, 60);
-            robot.alignAngle();
-            robot.turn(-45 * turnSide, 60);
-        }
-        // aaa
-        delay(999999);
-    }
-    else
-    {
-        // 4x3
-        delay(999999);
+        robot.moveTime(75, 75, diagonal / 2);
     }
 }
 
 void rescue()
 {
-    findTriangle();
+    // findTriangle();
+    robot.moveTime(-75, -75, diagonal / 2.25f);
+    robot.turn(-45 * turnSide, 45);
+    robot.alignAngle();
+    catchBall(400, false);
+    robot.moveTime(75, 75, 2500);
+    robot.alignAngle();
+    robot.moveTime(-75, -75, 500);
+    layCatcher();
+    robot.alignUltra(40, 5, 3);
+    robot.alignAngle();
+    robot.turn(-90 * turnSide, 45);
+    robot.alignAngle();
+    lowerCatcher();
+    robot.moveTime(75, 75, diagonal / 2);
+    robot.moveTime(-35, -35, 400);
+    layCatcher();
+    robot.alignAngle();
+
+    robot.turn(-90 * turnSide, 60);
+    robot.alignAngle();
+    robot.turn(-90 * turnSide, 60);
+    robot.alignAngle();
+    while (!proximity(centerUltra.read(), 38, 3))
+    {
+        robot.move(50, 50);
+    }
+
+    robot.alignAngle();
+    while (centerUltra.read() >= 35)
+    {
+        robot.move(25, 25);
+    }
+
+    robot.turn(45 * turnSide, 45);
+    robot.moveCentimeters(26, 80);
+
+    robot.turn(-45 * turnSide, 45);
+    robot.alignAngle();
+    robot.turn(-45 * turnSide, 45);
+
+    robot.moveTime(50, 50, 750);
+    releaseVictim();
+
+    for (int j = 1; j <= 3; j++)
+    {
+        robot.moveTime(-75, -75, 500 * j);
+        robot.turn(-45 * turnSide, 45);
+        robot.alignAngle();
+        robot.turn(-90 * turnSide, 45);
+
+        for (int k = 1; k <= 3; k++)
+        {
+            robot.alignAngle();
+            lowerCatcher();
+            robot.moveTime(75, 75, diagonal);
+            robot.moveTime(-75, -75, 500 * j);
+            raiseCatcher();
+            robot.alignAngle();
+            robot.turn(-90 * turnSide, 45);
+            robot.alignAngle();
+        }
+
+        pickCatcher();
+
+        while (!proximity(centerUltra.read(), 38, 3))
+        {
+            robot.move(50, 50);
+        }
+
+        robot.alignAngle();
+        catchBall();
+        robot.alignAngle();
+        while (centerUltra.read() >= 35)
+        {
+            robot.move(25, 25);
+        }
+
+        robot.turn(-45 * turnSide, 45);
+        robot.moveCentimeters(26, 80);
+
+        robot.turn(45 * turnSide, 45);
+        robot.alignAngle();
+        robot.turn(45 * turnSide, 45);
+
+        raiseCatcher();
+        robot.moveTime(75, 75, 750);
+        releaseVictim();
+    }
+
     delay(999999);
+
+    /*
     // o contrario da direcao do triangulo
     lowerCatcher();
     robot.moveTime(70, 70, 3000);
@@ -235,4 +234,5 @@ void rescue()
 
     robot.turnOffMotors();
     delay(999999);
+    */
 }

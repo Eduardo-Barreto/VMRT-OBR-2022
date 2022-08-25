@@ -151,7 +151,7 @@ public:
         delay(50);
         blueLedSensor.off();
 
-        int totalRGB = (preRed + preGreen + preBlue)+1;
+        int totalRGB = (preRed + preGreen + preBlue) + 1;
         this->RGBRed = (byte)(map(preRed, 0, totalRGB, 0, 100));
         this->RGBGreen = (byte)(map(preGreen, 0, totalRGB, 0, 100));
         this->RGBBlue = (byte)(map(preBlue, 0, totalRGB, 0, 100));
