@@ -276,13 +276,11 @@ void runCalibration()
     startButton.waitForPressAndRelease(
         []() -> void
         {
-            builtInLED.blink(200);
             rightTurnLED.blink(200);
             leftTurnLED.blink(200);
         },
         []() -> void
         {
-            builtInLED.blink(100);
             rightTurnLED.blink(100);
             leftTurnLED.blink(100);
         });

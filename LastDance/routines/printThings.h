@@ -188,7 +188,6 @@ void testAll()
         rightTurnLED.toggle();
         leftTurnLED.toggle();
         greenLED.toggle();
-        builtInLED.toggle();
         redLedSensor.toggle();
         greenLedSensor.toggle();
         blueLedSensor.toggle();

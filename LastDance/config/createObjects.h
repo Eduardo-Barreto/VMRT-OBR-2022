@@ -5,7 +5,6 @@ Ultrasonic rightUltra(30, 9);
 Ultrasonic lowerUltra(33, 13);
 #include "robot.h"
 #include "led.h"
-led builtInLED(LED_BUILTIN);
 led rightTurnLED(27);
 led greenLED(25);
 led leftTurnLED(23);

@@ -38,7 +38,6 @@ void setup()
 
     startButton.waitForRelease([]() -> void
                                {
-            builtInLED.blink(200);
             rightTurnLED.blink(200);
             greenLED.blink(200);
             leftTurnLED.blink(200); });
@@ -55,14 +54,12 @@ void setup()
             {
                 toggleCatcher();
             }
-            builtInLED.blink(200);
             rightTurnLED.blink(200);
             greenLED.blink(200);
             leftTurnLED.blink(200);
         },
         []() -> void
         {
-            builtInLED.blink(100);
             rightTurnLED.blink(100);
             greenLED.blink(100);
             leftTurnLED.blink(100);
@@ -73,7 +70,6 @@ void setup()
     motorRight.on();
 
     loadCalibrationSaved();
-    builtInLED.off();
     rightTurnLED.off();
     greenLED.off();
     leftTurnLED.off();
