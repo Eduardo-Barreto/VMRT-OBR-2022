@@ -43,6 +43,14 @@ void closeBlocker()
     catcherBlocker.write(85);
 }
 
+void pickCatcher()
+{
+    if (catcher.pos == 17)
+        return;
+
+    catcher.write(17);
+}
+
 void catchBall(int time = 400, bool layOnFinish = true)
 {
     catcher.write(30);
@@ -57,4 +65,17 @@ void catchBall(int time = 400, bool layOnFinish = true)
     delay(250);
     if (layOnFinish)
         layCatcher();
+}
+
+void releaseVictim()
+{
+    raiseCatcher();
+    openBlocker();
+    delay(500);
+    closeBlocker();
+    delay(250);
+    openBlocker();
+    delay(500);
+    closeBlocker();
+    delay(250);
 }
