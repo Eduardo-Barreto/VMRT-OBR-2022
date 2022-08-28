@@ -1,4 +1,4 @@
-#define DEBUG 1
+#define DEBUG 0
 #define DEBUG_LOG 1
 
 #if DEBUG_LOG == 1
@@ -54,16 +54,45 @@ void setup()
             {
                 toggleCatcher();
             }
-            rightTurnLED.blink(200);
+            if (bumper.isPressed())
+            {
+                redLedSensor.on();
+                greenLedSensor.off();
+                blueLedSensor.off();
+                delay(200);
+                redLedSensor.off();
+                greenLedSensor.on();
+                blueLedSensor.off();
+                delay(200);
+                redLedSensor.off();
+                greenLedSensor.off();
+                blueLedSensor.on();
+                delay(200);
+            }
             greenLED.blink(200);
-            leftTurnLED.blink(200);
+            leftTurnLED.set(greenSensors[0].getGreen());
+            rightTurnLED.set(greenSensors[1].getGreen());
         },
         []() -> void
         {
             rightTurnLED.blink(100);
             greenLED.blink(100);
             leftTurnLED.blink(100);
-            readAllLightSensors();
+            if (bumper.isPressed())
+            {
+                redLedSensor.on();
+                greenLedSensor.off();
+                blueLedSensor.off();
+                delay(200);
+                redLedSensor.off();
+                greenLedSensor.on();
+                blueLedSensor.off();
+                delay(200);
+                redLedSensor.off();
+                greenLedSensor.off();
+                blueLedSensor.on();
+                delay(200);
+            }
         });
 
     motorLeft.on();
@@ -78,6 +107,7 @@ void setup()
     if (catcher.pos == 0)
     {
         state = 2;
+        layCatcher();
     }
     else
     {
@@ -94,9 +124,8 @@ unsigned long timer = 0;
 int stateTest = 0;
 void debugLoop()
 {
-    turnSide = 1;
-    rescue();
-    robot.turnOffMotors();
+    lightYear();
+    delay(500);
 }
 
 void loop()

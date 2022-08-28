@@ -48,6 +48,7 @@ public:
         init();
     }
 
+
     /**
      * @brief Inicializa o motor de passo com as configurações
      */
