@@ -24,6 +24,12 @@ public:
         this->init();
     }
 
+    void set(bool _state)
+    {
+        state = _state;
+        digitalWrite(pin, state);
+    }
+
     /**
      * @brief Liga o LED
      */
