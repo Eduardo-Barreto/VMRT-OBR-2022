@@ -51,7 +51,7 @@ void checkObstacle()
         }
         robot.moveCentimeters(10, 60);
         robot.stop(10);
-        robot.turnOneWheel(-90, 85);
+        robot.turnOneWheel(-90, 70);
         robot.stop(100);
 
         maxSteps = motorRight.motorSteps + robot.centimetersToSteps(25);
@@ -70,7 +70,7 @@ void checkObstacle()
 
         robot.moveCentimeters(12, 60);
         robot.stop(10);
-        robot.turnOneWheel(-90, 85);
+        robot.turnOneWheel(-90, 70);
         robot.stop(10);
 
         maxSteps = motorRight.motorSteps + robot.centimetersToSteps(10);
@@ -88,7 +88,7 @@ void checkObstacle()
         robot.stop(10);
         alignLine();
 
-        unsigned long stepOut = motorRight.motorSteps + robot.centimetersToSteps(6);
+        unsigned long stepOut = motorRight.motorSteps + robot.centimetersToSteps(20);
         while (bumper.isReleased())
         {
             robot.move(-15, -15);
