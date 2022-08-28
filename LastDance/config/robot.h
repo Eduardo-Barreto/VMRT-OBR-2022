@@ -258,12 +258,10 @@ public:
     {
         char turnSide = degrees < 0 ? -1 : 1;
         degrees = abs(degrees);
-        velocity = min(abs(velocity), 85);
+        velocity = min(abs(velocity), 75);
 
-        int offsetMotors = 10;
+        int offsetMotors = 40;
         gyro->read();
-        if (gyro->Yaw < 0)
-            offsetMotors = 5;
 
         int targetAngle = convertDegrees((gyro->Yaw + degrees));
 
@@ -361,5 +359,13 @@ public:
     unsigned long getLeftSteps()
     {
         return motorLeft->motorSteps;
+    }
+
+    void die()
+    {
+        this->turnOffMotors();
+        while (true)
+        {
+        }
     }
 };
