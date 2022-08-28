@@ -225,4 +225,9 @@ public:
         readRGB();
         return this->RGBBlue;
     }
+
+    byte checkGreen(int value)
+    {
+        return (value >= minGreen && value <= maxGreen);
+    }
 };
