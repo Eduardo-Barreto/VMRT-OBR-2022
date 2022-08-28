@@ -1,5 +1,5 @@
 int borderThreshold = 80; // Valor mínimo para considerar que o sensor está diferente do seu oposto (direita-esquerda)
-int blackThreshold = 19;  // Valor máximo para considerar que o sensor está lendo preto
+int blackThreshold = 25;  // Valor máximo para considerar que o sensor está lendo preto
 
 byte centerLight;      // Valor lido do sensor de luz do meio
 byte centerRightLight; // Valor lido do sensor de luz do meio da direita
@@ -54,9 +54,6 @@ void readColors(int thresholdDiff = 0)
     centerRightBlack = centerRightLight < blackThreshold + thresholdDiff;
     rightBlack = rightLight < blackThreshold + thresholdDiff;
     borderRightBlack = borderRightLight < blackThreshold + thresholdDiff;
-
-    leftGreen = greenSensors[0].getGreen();
-    rightGreen = greenSensors[1].getGreen();
 }
 
 void alignLine(int force = 50, int _timeout = 750)
@@ -90,24 +87,6 @@ void alignGreen()
     while (greenSensors[1].getLight() < blackThreshold - 15 && millis() < timeout)
     {
         robot.move(-18, 18);
-    }
-}
-
-void runLineFollowerGreenSensors()
-{
-    int greenDiff = (greenSensors[0].getLight() - greenSensors[1].getLight());
-
-    if (greenDiff > borderThreshold)
-    {
-        robot.move(-targetPower, targetPower);
-    }
-    else if (greenDiff < -borderThreshold)
-    {
-        robot.move(targetPower, -targetPower);
-    }
-    else
-    {
-        robot.move(targetPower, targetPower);
     }
 }
 
@@ -157,7 +136,7 @@ void runLineFollower(bool ignoreUltra = false, bool ignoreTurns = false)
         }
     }
 
-    robot.moveTime(targetPower, targetPower, 15, false);
+    robot.moveTime(targetPower, targetPower, 10, false);
 }
 
 #include "obstacle.h"
@@ -172,7 +151,6 @@ void runFloor()
     if (millis() > 300)
     {
         checkObstacle();
-        gyro.read();
         if (checkRamp())
         {
             detachInterrupt(digitalPinToInterrupt(startButton.pin));
