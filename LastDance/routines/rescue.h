@@ -85,7 +85,7 @@ void findTriangle()
                 robot.turn(-90 * turnSide, 60);
                 robot.alignAngle();
                 robot.turn(-45 * turnSide, 60);
-                robot.moveTime(32, 32, 1250);
+                robot.moveTime(32, 32, 1500);
                 releaseVictim();
                 return;
             }
@@ -96,7 +96,7 @@ void findTriangle()
 
 void rescue()
 {
-    // findTriangle();
+    findTriangle();
     robot.moveTime(-75, -75, diagonal / 2.25f);
     robot.turn(-45 * turnSide, 45);
     robot.alignAngle();
@@ -152,14 +152,18 @@ void rescue()
             robot.alignAngle();
             lowerCatcher();
             robot.moveTime(75, 75, diagonal);
-            robot.moveTime(-75, -75, 500 * j);
+            if (k == 1)
+                gyro.init();
+            robot.moveTime(-75, -75, 500);
             raiseCatcher();
+            robot.alignAngle();
+            robot.alignUltra(40, 5 + ((j - 1) * 10), 3);
             robot.alignAngle();
             robot.turn(-90 * turnSide, 45);
             robot.alignAngle();
         }
 
-        pickCatcher();
+        // pickCatcher();
 
         while (!proximity(centerUltra.read(), 38, 3))
         {
@@ -169,70 +173,24 @@ void rescue()
         robot.alignAngle();
         catchBall();
         robot.alignAngle();
+        int distanceWall = (turnSide < 0) ? rightUltra.read() : leftUltra.read();
+
         while (centerUltra.read() >= 35)
         {
             robot.move(25, 25);
         }
 
         robot.turn(-45 * turnSide, 45);
-        robot.moveCentimeters(26, 80);
+        robot.moveCentimeters(35 - distanceWall, 80);
 
         robot.turn(45 * turnSide, 45);
         robot.alignAngle();
         robot.turn(45 * turnSide, 45);
 
         raiseCatcher();
-        robot.moveTime(75, 75, 750);
+        robot.moveTime(75, 75, 1350);
         releaseVictim();
     }
 
-    delay(999999);
-
-    /*
-    // o contrario da direcao do triangulo
-    lowerCatcher();
-    robot.moveTime(70, 70, 3000);
-    robot.stop(25);
-    robot.moveTime(-32, -32, 250);
-    raiseCatcher();
-    robot.turn(180 * turnSide, 45);
-    robot.alignAngle();
-    robot.alignUltra(70, 40, 3);
-    robot.alignUltra(30, 40);
-    robot.moveTime(30, 30, 350);
-    robot.alignAngle();
-    turnSide = -turnSide;
-    robot.turn(45 * turnSide, 45);
-    lowerCatcher();
-    robot.moveCentimeters(35, 80);
-    robot.turn(15 * turnSide, 45);
-    robot.moveTime(-32, -32, 650);
-
-    for (int i = 0; i < 3; i++)
-    {
-        lowerCatcher();
-        robot.moveTime(70, 70, 4250);
-        robot.stop(25);
-        robot.moveTime(-32, -32, 250);
-        raiseCatcher();
-        robot.alignAngle();
-        robot.turn(50 * turnSide, 45);
-        robot.moveTime(60, 60, 500);
-        robot.turn(40 * turnSide, 45);
-        robot.alignAngle();
-        robot.moveTime(-32, -32, 350);
-        robot.turn(-15 * turnSide, 60);
-    }
-
-    robot.alignAngle();
-    robot.alignUltra(60, 35, 3);
-    robot.turn(45 * turnSide, 45);
-    robot.moveCentimeters(20, 45);
-    robot.turn(-90 * turnSide, 60);
-    robot.moveTime(80, 80, 1500);
-    openBlocker();
-
-    robot.turnOffMotors();
-    delay(999999);
-    */
+    robot.die();
 }
