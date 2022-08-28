@@ -1,8 +1,86 @@
+int lastRightReads[350];
+int lastLeftReads[350];
+
+bool deuGreen()
+{
+
+    float leftBias = 0.5f;
+    float rightBias = 0.5f;
+
+    long rightGreenCount = 0;
+    long leftGreenCount = 0;
+    long rightCount = 0;
+    long leftCount = 0;
+
+    int i = 0;
+    for (i = 0; i < 350; i++)
+    {
+        lastRightReads[i] = 1024;
+        lastLeftReads[i] = 1024;
+    }
+
+    delay(500);
+    i = 0;
+
+    while (greenSensors[0].getLight() > 5 && greenSensors[1].getLight() > 5)
+    {
+        if (i >= 340)
+            break;
+        robot.move(10, 10);
+
+        lastRightReads[i] = greenSensors[1].getRawRead();
+        lastLeftReads[i] = greenSensors[0].getRawRead();
+        i++;
+    }
+    delay(500);
+
+    for (int read : lastRightReads)
+    {
+        if (read == 1024)
+            break;
+        rightCount++;
+        if (greenSensors[1].checkGreen(read))
+            rightGreenCount++;
+    }
+
+    for (int read : lastLeftReads)
+    {
+        if (read == 1024)
+            break;
+        leftCount++;
+        if (greenSensors[0].checkGreen(read))
+            leftGreenCount++;
+    }
+
+    leftGreen = leftGreenCount >= (leftCount * leftBias);
+    rightGreen = rightGreenCount >= (rightCount * rightBias);
+
+    // count * bias = x < greencount
+    DebugLog(leftCount);
+    DebugLog(" * ");
+    DebugLog(leftBias);
+    DebugLog(" = ");
+    DebugLog(leftCount * leftBias);
+    DebugLog(" < ");
+    DebugLog(leftGreenCount);
+    DebugLog(" = ");
+    DebugLogln(leftGreen);
+
+    DebugLog(rightCount);
+    DebugLog(" * ");
+    DebugLog(rightBias);
+    DebugLog(" = ");
+    DebugLog(rightCount * rightBias);
+    DebugLog(" < ");
+    DebugLog(rightGreenCount);
+    DebugLog(" = ");
+    DebugLogln(rightGreen);
+    DebugLogln("---");
+}
 
 void returnRoutine()
 {
     robot.stop(5);
-    robot.moveTime(-20, -20, 100);
     robot.stop(50);
     alignLine();
     targetPower = masterPower - 5;
@@ -76,7 +154,7 @@ bool checkGreen(int turnForce = 60)
         return true;
 
     delay(300);
-    robot.moveCentimeters(8, 50);
+    robot.moveCentimeters(5, 50);
     robot.turn(((turnForce > 0) ? (85) : (-85)), 60);
 
     int targetAngle = gyro.Yaw + (10 * (turnForce / abs(turnForce)));
@@ -90,7 +168,7 @@ bool checkGreen(int turnForce = 60)
         }
     }
 
-    robot.moveTime(-20, -20, 400);
+    // robot.moveTime(-20, -20, 400);
     robot.stop(50);
     returnRoutine();
     return true;
@@ -104,18 +182,21 @@ bool checkGreen(int turnForce = 60)
 bool checkTurn(int turnForce = 60)
 {
 
-    if (borderRightLight < blackThreshold)
+    if (borderRightBlack)
     {
         turnForce = turnForce;
         rightTurnLED.on();
     }
-    else if (borderLeftLight < blackThreshold)
+    else if (borderLeftBlack)
     {
         turnForce = -turnForce;
         leftTurnLED.on();
     }
     else
         return false;
+
+    leftGreen = false;
+    rightGreen = false;
 
     robot.stop(50);
 
@@ -125,7 +206,7 @@ bool checkTurn(int turnForce = 60)
         timeout = millis() + 500;
         while (((lineSensors[5].getLight() > blackThreshold - 15 || lineSensors[4].getLight() > blackThreshold - 15) && (lineSensors[1].getLight() > blackThreshold - 15 || lineSensors[2].getLight() > blackThreshold - 15)) && millis() < timeout)
         {
-            robot.move(15, 0);
+            robot.move(-15, 15);
         }
     }
     else
@@ -133,23 +214,15 @@ bool checkTurn(int turnForce = 60)
         timeout = millis() + 500;
         while (((lineSensors[5].getLight() > blackThreshold - 15 || lineSensors[4].getLight() > blackThreshold - 15) && (lineSensors[1].getLight() > blackThreshold - 15 || lineSensors[2].getLight() > blackThreshold - 15)) && millis() < timeout)
         {
-            robot.move(0, 15);
+            robot.move(15, -15);
         }
     }
-
-    robot.moveTime(20, 20, 100);
     robot.stop(50);
 
-    readColors();
-    if (checkGreen())
-        return true;
+    leftGreen = greenSensors[0].getGreen();
+    rightGreen = greenSensors[1].getGreen();
+    deuGreen();
 
-    alignGreen();
-    robot.moveTime(20, 20, 50);
-    alignGreen();
-    robot.stop(50);
-
-    readColors();
     if (checkGreen())
         return true;
 
@@ -162,7 +235,7 @@ bool checkTurn(int turnForce = 60)
     }
 
     robot.turn((turnForce < 0 ? 10 : -10), 60);
-    robot.moveCentimeters(8, 70);
+    robot.moveCentimeters(4, 70);
     gyro.read();
     int targetAngle = gyro.Yaw + (95 * (turnForce / abs(turnForce)));
 
@@ -176,7 +249,7 @@ bool checkTurn(int turnForce = 60)
         }
     }
 
-    robot.moveTime(-20, -20, 275);
+    // robot.moveTime(-20, -20, 275);
     returnRoutine();
     return true;
 }
