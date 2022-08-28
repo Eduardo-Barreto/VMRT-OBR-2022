@@ -335,6 +335,7 @@ void runCalibration()
     redLedSensor.off();
     greenLedSensor.off();
     blueLedSensor.off();
+    robot.turnOffMotors();
 
     greenLED.off();
     delay(150);
