@@ -17,6 +17,18 @@ Módulo responsável pelas funções relacionadas a matemática
  */
 #define interval(value, min, max) ((value) >= (min) && (value) <= (max))
 
+/**
+ * @brief Retorna se um valor está próximo de outro, dentro de uma tolerância especificada
+ * @param value: valor a ser verificado
+ * @param target: valor alvo
+ * @param tolerance: tolerância
+ * @return boolean: true se o valor está próximo do alvo, false caso contrário
+ *
+ * @example
+ *     bool a = proximity(9, 10, 2);
+ *    // a = true
+ *
+ */
 #define proximity(value, target, tolerance) (interval(value, target - tolerance, target + tolerance))
 
 /**

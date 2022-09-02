@@ -48,7 +48,6 @@ public:
         init();
     }
 
-
     /**
      * @brief Inicializa o motor de passo com as configurações
      */
@@ -61,6 +60,22 @@ public:
 
         // Desabilita o motor
         off();
+    }
+
+    /**
+     * @brief Habilita o motor de passo
+     */
+    void on()
+    {
+        digitalWrite(enablePin, 0);
+    }
+
+    /**
+     * @brief Desabilita o motor de passo
+     */
+    void off()
+    {
+        digitalWrite(enablePin, 1);
     }
 
     /**
@@ -122,25 +137,13 @@ public:
         _pulse = 0;
     }
 
+    /**
+     * @brief Move o motor de passo com uma velocidade especificada
+     * @param velocity: velocidade desejada (0% a 100%)
+     */
     void move(int velocity)
     {
         this->set(velocity);
         this->run();
-    }
-
-    /**
-     * @brief Habilita o motor de passo
-     */
-    void on()
-    {
-        digitalWrite(enablePin, 0);
-    }
-
-    /**
-     * @brief Desabilita o motor de passo
-     */
-    void off()
-    {
-        digitalWrite(enablePin, 1);
     }
 };

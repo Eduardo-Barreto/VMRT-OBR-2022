@@ -30,17 +30,22 @@ int turnPower = 17;                 // Velocidade do robô ao virar seguindo lin
 void setup()
 {
     wdt_disable();
+
     rightTurnLED.on();
     greenLED.on();
     leftTurnLED.on();
+
     gyro.init();
+
     DebugInit(115200);
 
-    startButton.waitForRelease([]() -> void
-                               {
+    startButton.waitForRelease(
+        []() -> void
+        {
             rightTurnLED.blink(200);
             greenLED.blink(200);
-            leftTurnLED.blink(200); });
+            leftTurnLED.blink(200);
+        });
 
     startButton.waitForPressAndRelease(
         []() -> void
@@ -56,6 +61,7 @@ void setup()
             }
             if (bumper.isPressed())
             {
+                // modo balada
                 redLedSensor.on();
                 greenLedSensor.off();
                 blueLedSensor.off();
@@ -99,6 +105,7 @@ void setup()
     motorRight.on();
 
     loadCalibrationSaved();
+
     rightTurnLED.off();
     greenLED.off();
     leftTurnLED.off();
@@ -114,17 +121,16 @@ void setup()
         layCatcher();
         state = 1;
     }
+
     attachInterrupt(digitalPinToInterrupt(startButton.pin), interruptMenu, LOW);
     redLedSensor.off();
     greenLedSensor.off();
     blueLedSensor.off();
 }
 
-unsigned long timer = 0;
-int stateTest = 0;
 void debugLoop()
 {
-    lightYear();
+    buzzer();
     delay(500);
 }
 

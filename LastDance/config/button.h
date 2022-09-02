@@ -1,10 +1,3 @@
-// pressed
-// released
-// falling edge
-// rising edge
-// wait for press
-// wait for press and release
-
 class button
 {
 private:

@@ -2,20 +2,6 @@
 Módulo de configuração dos sensores de luz
 */
 
-/* #define light0Pin A7
-#define light1Pin A8
-#define light2Pin A9
-#define light3Pin A10
-#define light4Pin A11
-#define light5Pin A12
-#define light6Pin A13
-
-#define green0Pin A14
-#define green1Pin A15
-
-int light[7];
-int green[2]; */
-
 class lightSensor
 {
 private:
@@ -27,6 +13,9 @@ private:
 
 public:
     byte pin;         // Pino do sensor de luz
+    byte countGreen;  // Flag de controle para verificar se o verde é real
+    byte light;       // Valor tratado de iluminação do sensor de luz (0%~100%)
+    bool green;       // Indica se o sensor está lendo verde
     int minRead;      // Valor mínimo lido na calibração
     int maxRead;      // Valor máximo lido na calibração
     int minReadRed;   // Valor mínimo lido na calibração do vermelho
@@ -38,15 +27,12 @@ public:
     int minGreen;     // Valor mínimo do intervalo considerado como verde
     int maxGreen;     // Valor máximo do intervalo considerado como verde
     int raw;          // Valor cru lido do sensor de luz
-    byte light;       // Valor tratado de iluminação do sensor de luz (0%~100%)
     int lightRed;     // Valor tratado de iluminação com luz vermelha
     int lightGreen;   // Valor tratado de iluminação com luz verde
     int lightBlue;    // Valor tratado de iluminação com luz azul
     int RGBRed;       // Porcentagem de vermelho lida do sensor de luz
     int RGBGreen;     // Porcentagem de verde lida do sensor de luz
     int RGBBlue;      // Porcentagem de azul lida do sensor de luz
-    byte countGreen;  // Flag de controle para verificar se o verde é real
-    bool green;       // Indica se o sensor está lendo verde
     int minOut;
     int maxOut;
 
@@ -82,6 +68,11 @@ public:
         this->maxGreen = raw + (interval * 1.5f);
     }
 
+
+    /**
+     * @brief Configura e recalcula o intervalo de luz considerado como verde
+     * @param offset: Valor de offset para o intervalo de luz considerado como verde
+    */
     void forceGreen(float offset = 5)
     {
         float interval = (maxRead - minRead);
@@ -104,6 +95,9 @@ public:
         this->green = (raw >= minGreen && raw <= maxGreen);
     }
 
+    /**
+     * @brief Atualiza o valor bruto lido do sensor RGB
+     */
     void readAbsoluteRGB()
     {
         blueLedSensor.off();
@@ -128,6 +122,9 @@ public:
         blueLedSensor.off();
     }
 
+    /**
+     * @brief Atualiza o valor de luz lido do sensor RGB
+     */
     void readRGB()
     {
         blueLedSensor.off();
@@ -179,18 +176,33 @@ public:
         return this->light;
     }
 
+    /**
+     * @brief Atualiza e retorna a luz lida no sensor de luz com a cor vermelha
+     *
+     * @return int: Valor lido do sensor de luz com a cor vermelha
+     */
     byte getLightRed()
     {
         read();
         return this->lightRed;
     }
 
+    /**
+     * @brief Atualiza e retorna a luz lida no sensor de luz com a cor verde
+     *
+     * @return int: Valor lido do sensor de luz com a cor verde
+     */
     byte getLightGreen()
     {
         read();
         return this->lightGreen;
     }
 
+    /**
+     * @brief Atualiza e retorna a luz lida no sensor de luz com a cor azul
+     *
+     * @return int: Valor lido do sensor de luz com a cor azul
+     */
     byte getLightBlue()
     {
         read();
@@ -208,24 +220,44 @@ public:
         return this->green;
     }
 
+    /**
+     * @brief Atualiza e retorna a luz lida no sensor RGB com a cor vermelha
+     *
+     * @return int: Valor lido do sensor RGB com a cor vermelha
+     */
     byte getRGBRed()
     {
         readRGB();
         return this->RGBRed;
     }
 
+    /**
+     * @brief Atualiza e retorna a luz lida no sensor RGB com a cor verde
+     *
+     * @return int: Valor lido do sensor RGB com a cor verde
+     */
     byte getRGBGreen()
     {
         readRGB();
         return this->RGBGreen;
     }
 
+    /**
+     * @brief Atualiza e retorna a luz lida no sensor RGB com a cor azul
+     *
+     * @return int: Valor lido do sensor RGB com a cor azul
+     */
     byte getRGBBlue()
     {
         readRGB();
         return this->RGBBlue;
     }
 
+    /**
+     * @brief Atualiza e retorna a luz lida no sensor RGB com a cor vermelha
+     *
+     * @return int: Valor lido do sensor RGB com a cor vermelha
+     */
     byte checkGreen(int value)
     {
         return (value >= minGreen && value <= maxGreen);

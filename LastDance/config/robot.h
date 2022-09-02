@@ -8,15 +8,15 @@
 class robotBase
 {
 private:
+    char maxVelocity;                        // Velocidade máxima para controle de aceleração
+    int motorResolution;                     // Resolução do motor (step por revolução)
+    unsigned long stepsCompleteAcceleration; // Número de steps para acelerar
+    float wheelCircunference;                // Circunferência do roda
+    float robotCircunference;                // Circunferência do robô
+    float acceleration;                      // Aceleração do motor
     stepperMotor *motorRight;                // Motor direito
     stepperMotor *motorLeft;                 // Motor esquerdo
     gyroSensor *gyro;                        // Sensor de giroscópio
-    float wheelCircunference;                // Circunferência do roda
-    float robotCircunference;                // Circunferência do robô
-    int motorResolution;                     // Resolução do motor (step por revolução)
-    char maxVelocity;                        // Velocidade máxima para controle de aceleração
-    float acceleration;                      // Aceleração do motor
-    unsigned long stepsCompleteAcceleration; // Número de steps para acelerar
 
 public:
     /**
@@ -39,6 +39,144 @@ public:
         this->wheelCircunference = _wheelDiameter * PI;
         this->robotCircunference = motorDiameter * PI;
         this->motorResolution = motorRight->resolution;
+    }
+
+    /**
+     * @brief Retorna a quantidade de steps do motor da direita
+     * @return unsigned long: quantidade de steps do motor da direita
+     */
+    unsigned long getRightSteps()
+    {
+        return motorRight->motorSteps;
+    }
+
+    /**
+     * @brief Retorna a quantidade de steps do motor da esquerda
+     * @return unsigned long: quantidade de steps do motor da esquerda
+     */
+    unsigned long getLeftSteps()
+    {
+        return motorLeft->motorSteps;
+    }
+
+    /**
+     * @brief Converte centímetros para steps
+     *
+     * @param centimeters: centímetros a serem convertidos
+     *
+     * @return int: steps convertidos
+     *
+     * @example
+     *    a = robot.centimetersToSteps(100); // Converte 100 centímetros para steps e armazena na variável A
+     *    // a variável `a` depende da circunferência da roda e da resolução do motor
+     */
+    int centimetersToSteps(int centimeters)
+    {
+        float _steps = centimeters / (wheelCircunference / 10) * motorResolution;
+        return _steps;
+    }
+
+    /**
+     * @brief converte graus (rotação) em steps do motor
+     * @param degrees: graus a serem convertidos
+     * @return int: steps convertidos
+     *
+     * @example
+     *     a = robot.degreesToSteps(90); // Converte 90 graus para steps e armazena na variável A
+     */
+    int turnDegreesToSteps(int degrees)
+    {
+        return ((this->robotCircunference / wheelCircunference) / 360 * degrees) * this->motorResolution;
+    }
+
+    /**
+     * @brief Liga os motores do robô
+     */
+    void turnOnMotors()
+    {
+        motorRight->on();
+        motorLeft->on();
+    }
+
+    /**
+     * @brief Desliga os motores do robô
+     */
+    void turnOffMotors()
+    {
+        motorRight->off();
+        motorLeft->off();
+    }
+
+    /**
+     * @brief Move os motores do robô com a velocidade desejada
+     * @param velocityRight: velocidade do motor direito
+     * @param velocityLeft: velocidade do motor esquerdo
+     *
+     * @example
+     *     robot.move(100, 100); // Move os motores com 100% de velocidade
+     */
+    void move(int velocityRight, int velocityLeft)
+    {
+        motorRight->set(velocityRight);
+        motorLeft->set(velocityLeft);
+        motorRight->run();
+        motorLeft->run();
+    }
+
+    /**
+     * @brief Para os motores durante o tempo desejado
+     * @param time: tempo para parar os motores (em milissegundos)
+     *
+     * @example
+     *    robot.stop(1000); // Para os motores durante 1 segundo
+     */
+    void stop(int time = 0)
+    {
+        move(0, 0);
+        if (time > 0)
+            delay(time);
+    }
+
+    /**
+     * @brief Move o robô por uma quantidade especificada de steps
+     * @param (int) velocityRight: velocidade do motor direito
+     * @param (int) velocityLeft: velocidade do motor esquerdo
+     * @param (int) steps: número de steps para mover
+     *
+     * @example
+     *    robot.moveSteps(100, 100, 1000); // Move os motores com 100% de velocidade por 1000 steps
+     */
+    void moveSteps(int velocityRight, int velocityLeft, unsigned long _steps)
+    {
+        unsigned long endSteps = motorRight->motorSteps + _steps;
+        while (motorRight->motorSteps <= endSteps)
+        {
+            this->move(velocityRight, velocityLeft);
+        }
+        this->stop();
+    }
+
+    /**
+     * @brief Move os motores do robô durante o tempo desejado com a velocidade desejada
+     * @param velocityRight: velocidade do motor direito
+     * @param velocityLeft: velocidade do motor esquerdo
+     * @param time: tempo de movimento em milissegundos
+     *
+     * @example
+     *    robot.moveTime(100, 100, 1000); // Move os motores com 100% de velocidade por 1 segundo
+     *
+     *
+     * TODO: Controlar aceleração durante o movimento;
+     */
+    void moveTime(int velocityRight, int velocityLeft, unsigned long time, bool stopAfter = true)
+    {
+        unsigned long endTime = millis() + time;
+        while (millis() < endTime)
+        {
+            this->move(velocityRight, velocityLeft);
+        }
+        if (stopAfter)
+            this->stop();
     }
 
     /**
@@ -82,98 +220,6 @@ public:
     }
 
     /**
-     * @brief Move os motores do robô com a velocidade desejada
-     * @param velocityRight: velocidade do motor direito
-     * @param velocityLeft: velocidade do motor esquerdo
-     *
-     * @example
-     *     robot.move(100, 100); // Move os motores com 100% de velocidade
-     */
-    void move(int velocityRight, int velocityLeft)
-    {
-        motorRight->set(velocityRight);
-        motorLeft->set(velocityLeft);
-        motorRight->run();
-        motorLeft->run();
-    }
-
-    /**
-     * @brief Para os motores durante o tempo desejado
-     * @param time: tempo para parar os motores (em milissegundos)
-     *
-     * @example
-     *    robot.stop(1000); // Para os motores durante 1 segundo
-     */
-    void stop(int time = 0)
-    {
-        move(0, 0);
-        if (time > 0)
-            delay(time);
-    }
-
-    void turnOnMotors()
-    {
-        motorRight->on();
-        motorLeft->on();
-    }
-
-    void turnOffMotors()
-    {
-        motorRight->off();
-        motorLeft->off();
-    }
-
-    void moveSteps(int velocityRight, int velocityLeft, unsigned long Steps)
-    {
-        unsigned long endSteps = motorRight->motorSteps + Steps;
-        while (motorRight->motorSteps <= endSteps)
-        {
-            this->move(velocityRight, velocityLeft);
-        }
-        this->stop();
-    }
-
-    /**
-     * @brief Move os motores do robô durante o tempo desejado com a velocidade desejada
-     * @param velocityRight: velocidade do motor direito
-     * @param velocityLeft: velocidade do motor esquerdo
-     * @param time: tempo de movimento em milissegundos
-     *
-     * @example
-     *    robot.moveTime(100, 100, 1000); // Move os motores com 100% de velocidade por 1 segundo
-     *
-     *
-     * TODO: Controlar aceleração durante o movimento;
-     */
-    void moveTime(int velocityRight, int velocityLeft, unsigned long time, bool stopAfter = true)
-    {
-        unsigned long endTime = millis() + time;
-        while (millis() < endTime)
-        {
-            this->move(velocityRight, velocityLeft);
-        }
-        if (stopAfter)
-            this->stop();
-    }
-
-    /**
-     * @brief Converte centímetros para steps
-     *
-     * @param centimeters: centímetros a serem convertidos
-     *
-     * @return int: steps convertidos
-     *
-     * @example
-     *    a = robot.centimetersToSteps(100); // Converte 100 centímetros para steps e armazena na variável A
-     *    // a variável `a` depende da circunferência da roda e da resolução do motor
-     */
-    int centimetersToSteps(int centimeters)
-    {
-        float _steps = centimeters / (wheelCircunference / 10) * motorResolution;
-        return _steps;
-    }
-
-    /**
      * @brief Move os motores do robô pela distância desejada com a velocidade desejada
      * @param centimeters: distância em centímetros a ser percorrida
      * @param velocity: velocidade desejada
@@ -206,18 +252,12 @@ public:
     /**
      * @brief Faz uma curva com os graus desejados com a velocidade desejada
      * @param degrees: graus a serem percorridos
-     * @param _velocity: velocidade desejada
+     * @param velocity: velocidade desejada
      *
      * @example
      *     robot.turnDegrees(90, 50); // Faz uma curva de 90 graus com 50% de velocidade
      *     robot.turnDegrees(-90, 50); // Faz uma curva de -90 graus com 50% de velocidade
      */
-
-    int turnDegreesToSteps(int degrees)
-    {
-        return ((this->robotCircunference / wheelCircunference) / 360 * degrees) * this->motorResolution;
-    }
-
     void turn(int degrees, int velocity)
     {
         char turnSide = degrees < 0 ? -1 : 1;
@@ -254,6 +294,15 @@ public:
         this->stop();
     }
 
+    /**
+     * @brief Faz uma curva com os graus desejados com a velocidade desejada, mas somente com uma roda
+     * @param degrees: graus a serem percorridos
+     * @param velocity: velocidade desejada
+     *
+     * @example
+     *     robot.turnOneWheel(90, 50); // Faz uma curva de 90 graus com 50% de velocidade
+     *     robot.turnOneWheel(-90, 50); // Faz uma curva de -90 graus com 50% de velocidade
+     */
     void turnOneWheel(int degrees, int velocity)
     {
         char turnSide = degrees < 0 ? -1 : 1;
@@ -294,6 +343,15 @@ public:
         this->stop();
     }
 
+    /**
+     * @brief Alinha o robô com algum objeto usando o ultrassônico da frente
+     * @param velocity: velocidade desejada
+     * @param distance: distância desejada do objeto
+     * @param times: quantidade de vezes que o robô irá alinhar
+     *
+     * @example
+     *     robot.align(50, 20, 3); // Alinha o robô com o objeto a 20cm de distância com 50% de velocidade 3 vezes
+     */
     void alignUltra(int velocity, int distance, byte times = 2)
     {
         for (int i = 0; i <= times; i++)
@@ -312,6 +370,14 @@ public:
         }
     }
 
+    /**
+     * @brief Rotaciona o robô para um determinado ângulo especificado com uma velocidade especificada
+     * @param targetAngle: ângulo desejado
+     * @param velocity: velocidade desejada
+     *
+     * @example
+     *    robot.moveToAngle(90, 50); // Rotaciona o robô para 90 graus com 50% de velocidade
+     */
     void moveToAngle(int targetAngle, int velocity = 60)
     {
         gyro->read();
@@ -325,6 +391,10 @@ public:
         this->stop();
     }
 
+    /**
+     * @brief Alinha o robô com um ângulo ortogonal em uma velocidade especificada
+     * @param velocity: velocidade desejada
+     */
     void alignAngle(int velocity = 40)
     {
         this->stop(50);
@@ -351,16 +421,9 @@ public:
         }
     }
 
-    unsigned long getRightSteps()
-    {
-        return motorRight->motorSteps;
-    }
-
-    unsigned long getLeftSteps()
-    {
-        return motorLeft->motorSteps;
-    }
-
+    /**
+     * @brief Para o robô, desliga o motor e não faz mais nada até o reset
+     */
     void die()
     {
         this->turnOffMotors();

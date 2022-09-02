@@ -40,7 +40,7 @@ public:
      */
     void init()
     {
-        // Pinos invadidos pelo giroscópio
+        // Pinos invadidos pelo giroscópio na montagem do robô
         pinMode(16, INPUT);
         pinMode(17, INPUT);
         pinMode(18, INPUT);

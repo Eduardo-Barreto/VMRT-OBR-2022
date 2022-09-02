@@ -24,6 +24,14 @@ public:
         this->init();
     }
 
+    /**
+     * @brief Seta um estado para o led
+     * @param _state: (bool) Estado do LED
+     *
+     * @example
+     *     meuLed.setState(true);
+     *    // LED ligado
+     */
     void set(bool _state)
     {
         state = _state;
