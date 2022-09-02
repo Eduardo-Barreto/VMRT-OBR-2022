@@ -202,7 +202,7 @@ void testAll()
     if (F1.isPressed())
     {
         openBlocker();
-        nokia();
+        buzzer(750);
         closeBlocker();
     }
     if (F2.risingEdge())
