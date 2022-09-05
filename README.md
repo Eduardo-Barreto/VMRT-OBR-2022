@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://a360.co/3SMYfpp">
-    <img src="Assets/Bruno.gif" alt="Robô Bruno" />
+    <img src="Assets/Bruno3D.gif" alt="Robô Bruno" />
   </a>
 </p>
 
